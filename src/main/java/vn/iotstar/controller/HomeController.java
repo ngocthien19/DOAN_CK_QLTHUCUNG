@@ -1,5 +1,6 @@
 package vn.iotstar.controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +24,7 @@ import vn.iotstar.repository.DanhMucRepository;
 import vn.iotstar.service.CuaHangService;
 import vn.iotstar.service.DanhMucService;
 import vn.iotstar.service.SanPhamService;
+import vn.iotstar.specification.SanPhamSpecification;
 
 @Controller
 public class HomeController {
@@ -39,12 +43,9 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-        // Lấy danh sách các danh mục
         List<DanhMuc> danhMucs = danhMucRepository.findAll();
-        
         List<CuaHang> cuaHangs = cuaHangRepository.findTop3NewestStores();
 
-        // Lấy 4 sản phẩm cho mỗi danh mục
         for (DanhMuc danhMuc : danhMucs) {
             List<SanPham> sanPhams = sanPhamService.findTop4ByDanhMucOrderByNgayNhapDesc(danhMuc);
             model.addAttribute("sanPhams_" + danhMuc.getMaDanhMuc(), sanPhams);
@@ -58,9 +59,9 @@ public class HomeController {
     @GetMapping("/view/{MaSanPham}")
     public String viewProductDetail(@PathVariable("MaSanPham") Integer maSanPham, Model model) {
         SanPham sanPham = sanPhamService.findByMaSanPham(maSanPham);
-        String storeName = sanPham.getCuaHang().getTenCuaHang();
 
-        List<SanPham> relatedProducts = sanPhamService.findRelatedProductsByCategoryExcludingCurrent(sanPham.getDanhMuc(), maSanPham);
+        List<SanPham> relatedProducts = sanPhamService.findRelatedProductsByCategoryExcludingCurrent(
+            sanPham.getDanhMuc(), maSanPham);
         if (relatedProducts == null) {
             relatedProducts = new ArrayList<>();
         }
@@ -77,9 +78,14 @@ public class HomeController {
             @PathVariable("tenDanhMuc") String tenDanhMuc,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "9") int size,
+            @RequestParam(required = false) List<String> price,
+            @RequestParam(required = false) List<String> store,
+            @RequestParam(required = false) List<String> loai,
+            @RequestParam(required = false) List<String> star,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String search,
             Model model) {
         
-        // Lấy danh mục theo tên (đã chuyển đổi từ URL)
         String decodedTenDanhMuc = decodeCategoryName(tenDanhMuc);
         DanhMuc danhMuc = danhMucService.findByTenDanhMuc(decodedTenDanhMuc);
         
@@ -87,46 +93,85 @@ public class HomeController {
             return "redirect:/";
         }
         
-        // Phân trang sản phẩm - SỬA DÒNG NÀY
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<SanPham> productPage = sanPhamService.findByDanhMuc(danhMuc, pageable);
+        // Tạo Specification với filters
+        Specification<SanPham> spec = SanPhamSpecification.filterProducts(
+            danhMuc, price, store, loai, star, search
+        );
         
-        // Lấy TẤT CẢ sản phẩm thuộc danh mục này (cho filter)
+        // Tạo Sort
+        Sort sortObj = createSort(sort);
+        
+        // Tạo Pageable - Database chỉ query đúng page cần thiết
+        Pageable pageable = PageRequest.of(page - 1, size, sortObj);
+        
+        // Query với Specification
+        Page<SanPham> productPage = sanPhamService.findAll(spec, pageable);
+        
+        // Lấy danh sách stores và loại (không filter) cho dropdown
         List<SanPham> allProducts = sanPhamService.findByDanhMuc(danhMuc);
         
-        // Lấy danh sách cửa hàng duy nhất từ tất cả sản phẩm
         List<String> stores = allProducts.stream()
                 .map(sp -> sp.getCuaHang().getTenCuaHang())
                 .distinct()
+                .sorted()
                 .collect(Collectors.toList());
         
-        // Lấy danh sách loại sản phẩm duy nhất từ tất cả sản phẩm
         List<String> loaiSanPhams = allProducts.stream()
                 .map(SanPham::getLoaiSanPham)
                 .distinct()
+                .sorted()
                 .collect(Collectors.toList());
         
-        // Set banner URL
         String bannerUrl = getBannerUrlByCategory(danhMuc.getMaDanhMuc());
          
-        // Add attributes to model
+        // Add attributes
         model.addAttribute("categoryName", danhMuc.getTenDanhMuc());
-        model.addAttribute("products", productPage.getContent()); // Sản phẩm của trang hiện tại
+        model.addAttribute("products", productPage.getContent());
         model.addAttribute("stores", stores);
         model.addAttribute("loaiSanPhams", loaiSanPhams);
         model.addAttribute("bannerUrl", bannerUrl);
         
-        // Phân trang attributes
+        // Pagination
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", productPage.getTotalPages());
         model.addAttribute("totalElements", productPage.getTotalElements());
         model.addAttribute("pageUrl", "/category/" + tenDanhMuc);
         
+        // Selected filters
+        model.addAttribute("selectedPrices", price != null ? price : new ArrayList<>());
+        model.addAttribute("selectedStores", store != null ? store : new ArrayList<>());
+        model.addAttribute("selectedLoais", loai != null ? loai : new ArrayList<>());
+        model.addAttribute("selectedStars", star != null ? star : new ArrayList<>());
+        model.addAttribute("selectedSort", sort != null ? sort : "default");
+        model.addAttribute("searchKeyword", search != null ? search : "");
+        
         return "web/productList";
+    }
+    
+    private Sort createSort(String sortType) {
+        if (sortType == null || sortType.equals("default")) {
+            return Sort.by(Sort.Direction.DESC, "ngayNhap");
+        }
+        
+        switch (sortType) {
+            case "asc-name":
+                return Sort.by(Sort.Direction.ASC, "tenSanPham");
+            case "dsc-name":
+                return Sort.by(Sort.Direction.DESC, "tenSanPham");
+            case "asc-price":
+                return Sort.by(Sort.Direction.ASC, "giaBan");
+            case "dsc-price":
+                return Sort.by(Sort.Direction.DESC, "giaBan");
+            case "asc-like":
+                return Sort.by(Sort.Direction.ASC, "luotThich");
+            case "dsc-like":
+                return Sort.by(Sort.Direction.DESC, "luotThich");
+            default:
+                return Sort.by(Sort.Direction.DESC, "ngayNhap");
+        }
     }
 
     private String decodeCategoryName(String encodedName) {
-        // Chuyển đổi từ URL-friendly name về tên gốc
         switch (encodedName.toLowerCase()) {
             case "cho-canh":
                 return "Chó cảnh";
@@ -135,21 +180,93 @@ public class HomeController {
             case "phu-kien":
                 return "Phụ kiện";
             default:
-                // Nếu không khớp, trả về encodedName (cho trường hợp tên khác)
                 return encodedName.replace("-", " ");
         }
     }
 
     private String getBannerUrlByCategory(Integer maDanhMuc) {
         switch (maDanhMuc) {
-            case 1: // Chó cảnh
+            case 1:
                 return "/images/banner-cho-canh.jpg";
-            case 2: // Mèo cảnh
+            case 2:
                 return "/images/banner-meo-canh.jpg";
-            case 3: // Phụ kiện
+            case 3:
                 return "/images/banner-phu-kien.jpg";
             default:
                 return "/images/banner-default.jpg";
         }
+    }
+    
+    @GetMapping("/products")
+    public String allProducts(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(required = false) List<String> price,
+            @RequestParam(required = false) List<String> store,
+            @RequestParam(required = false) List<String> loai,
+            @RequestParam(required = false) List<String> star,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String search,
+            Model model) {
+        
+        // Decode UTF-8 pour le search
+        if (search != null && !search.trim().isEmpty()) {
+            try {
+                search = java.net.URLDecoder.decode(search, "UTF-8");
+                search = search.trim();
+            } catch (Exception e) {
+                // Si déjà décodé, continuer
+            }
+        }
+        
+        // Créer Specification (null pour danhMuc = chercher tout)
+        Specification<SanPham> spec = SanPhamSpecification.filterProducts(
+            null, price, store, loai, star, search
+        );
+        
+        // Créer Sort
+        Sort sortObj = createSort(sort);
+        
+        // Query avec Specification
+        Pageable pageable = PageRequest.of(page - 1, size, sortObj);
+        Page<SanPham> productPage = sanPhamService.findAll(spec, pageable);
+        
+        // Récupérer liste stores et loai pour filter
+        List<SanPham> allProducts = sanPhamService.findAll();
+        
+        List<String> stores = allProducts.stream()
+                .map(sp -> sp.getCuaHang().getTenCuaHang())
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+        
+        List<String> loaiSanPhams = allProducts.stream()
+                .map(SanPham::getLoaiSanPham)
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+        
+        // Add attributes
+        model.addAttribute("categoryName", "Tất cả sản phẩm");
+        model.addAttribute("products", productPage.getContent());
+        model.addAttribute("stores", stores);
+        model.addAttribute("loaiSanPhams", loaiSanPhams);
+        model.addAttribute("bannerUrl", "/images/banner-default.jpg");
+        
+        // Pagination
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("totalElements", productPage.getTotalElements());
+        model.addAttribute("pageUrl", "/products");
+        
+        // Selected filters
+        model.addAttribute("selectedPrices", price != null ? price : new ArrayList<>());
+        model.addAttribute("selectedStores", store != null ? store : new ArrayList<>());
+        model.addAttribute("selectedLoais", loai != null ? loai : new ArrayList<>());
+        model.addAttribute("selectedStars", star != null ? star : new ArrayList<>());
+        model.addAttribute("selectedSort", sort != null ? sort : "default");
+        model.addAttribute("searchKeyword", search != null ? search : "");
+        
+        return "web/products";
     }
 }

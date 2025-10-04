@@ -255,6 +255,145 @@
     opacity: 0.7;
 }
 
+/* Active Filters Styling - Version sobre */
+.active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+    align-items: center;
+}
+
+.filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.filter-tag:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.filter-tag i.fa-times {
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    color: #6b7280;
+}
+
+.filter-tag:hover i.fa-times {
+    opacity: 1;
+}
+
+.clear-all-filters {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    margin-left: 4px;
+}
+
+.clear-all-filters:hover {
+    background: #fecaca;
+    border-color: #fca5a5;
+}
+
+.clear-all-filters i {
+    font-size: 11px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .active-filters {
+        margin: 10px 0;
+    }
+    
+    .filter-tag,
+    .clear-all-filters {
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+}
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .active-filters {
+        margin: 10px 0;
+    }
+    
+    .filter-tag,
+    .clear-all-filters {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+}
+
+.no-products {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 50px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.no-products .message p{
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.no-products .fa-search {
+    font-size: 50px;
+    color: #ccc;
+}
+
+/* Clear Filters Button */
+.clear-filters-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #e94560;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.clear-filters-btn:hover {
+    background-color: #d63851;
+    transform: scale(1.02);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .container-product {

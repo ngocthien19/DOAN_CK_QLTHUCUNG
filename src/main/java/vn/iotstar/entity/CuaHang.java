@@ -40,9 +40,63 @@ public class CuaHang {
     @Column(name = "HinhAnh", columnDefinition = "NVARCHAR(255)")
     private String hinhAnh;
     
+    // Các trường mới thêm vào với validate
+    @NotBlank(message = "Địa chỉ cửa hàng không được để trống")
+    @Size(max = 255, message = "Địa chỉ không được quá 255 ký tự")
+    @Column(name = "DiaChi", nullable = false, columnDefinition = "NVARCHAR(255)")
+    private String diaChi;
+    
+    @NotBlank(message = "Số điện thoại không được để trống")
+    @Pattern(regexp = "(84|0[3|5|7|8|9])+([0-9]{8})\\b", message = "Số điện thoại không hợp lệ")
+    @Size(max = 20, message = "Số điện thoại không được quá 20 ký tự")
+    @Column(name = "SoDienThoai", nullable = false, columnDefinition = "VARCHAR(20)")
+    private String soDienThoai;
+    
+    @NotBlank(message = "Email không được để trống")
+    @Email(message = "Email không hợp lệ")
+    @Size(max = 100, message = "Email không được quá 100 ký tự")
+    @Column(name = "Email", nullable = false, columnDefinition = "VARCHAR(100)")
+    private String email;
+    
+    @Min(value = 0, message = "Đánh giá trung bình không được nhỏ hơn 0")
+    @Max(value = 5, message = "Đánh giá trung bình không được lớn hơn 5")
+    @Digits(integer = 1, fraction = 1, message = "Đánh giá trung bình phải có định dạng số thập phân (ví dụ: 4.5)")
+    @Column(name = "DanhGiaTrungBinh")
+    private Double danhGiaTrungBinh;
+    
+    @Min(value = 0, message = "Số lượng đánh giá không được nhỏ hơn 0")
+    @Column(name = "SoLuongDanhGia")
+    @Builder.Default
+    private Integer soLuongDanhGia = 0;
+    
+    @Min(value = 1900, message = "Năm thành lập phải từ 1900")
+    @Max(value = 2100, message = "Năm thành lập không được vượt quá 2100")
+    @Column(name = "NamThanhLap")
+    private Integer namThanhLap;
+     
+    @NotNull(message = "Trạng thái không được để trống")
+    @Column(name = "TrangThai", nullable = false)
+    @Builder.Default
+    private Boolean trangThai = true;
+    
     @OneToMany(mappedBy = "cuaHang", cascade = CascadeType.ALL)
     private List<SanPham> sanPhams;
     
     @OneToMany(mappedBy = "cuaHang", cascade = CascadeType.ALL)
     private List<KhuyenMai> khuyenMais;
+    
+    // Custom validation methods
+    @AssertTrue(message = "Năm thành lập không được lớn hơn năm hiện tại")
+    public boolean isNamThanhLapValid() {
+        if (namThanhLap == null) return true;
+        int currentYear = java.time.Year.now().getValue();
+        return namThanhLap <= currentYear;
+    }
+    
+    @AssertTrue(message = "Đánh giá trung bình phải có số lượng đánh giá tương ứng")
+    public boolean isDanhGiaValid() {
+        if (danhGiaTrungBinh == null && soLuongDanhGia == 0) return true;
+        if (danhGiaTrungBinh != null && soLuongDanhGia != null && soLuongDanhGia > 0) return true;
+        return false;
+    }
 }

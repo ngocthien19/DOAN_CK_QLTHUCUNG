@@ -36,36 +36,31 @@
                     </a>
                 </div>
                 <div class="search-box f_flex" data-aos="fade-left">
-                    <i class="fa fa-search"></i>
-                    <input
-                        id="search-input"
-                        type="text"
-                        placeholder="Search and hit enter..."
-                        th:value="${searchTerm}"
-                        name="searchTerm"
-                    />
-                    <span>All Categories</span>
+                    <form th:action="@{/search}" method="get" accept-charset="UTF-8" style="display: flex; width: 100%; align-items: center;">
+					    <i class="fa fa-search"></i>
+					    <input
+					        id="search-input"
+					        type="text"
+					        placeholder="Tìm kiếm sản phẩm..."
+					        th:value="${searchKeyword}"
+					        name="search"
+					        accept-charset="UTF-8"
+					        autocomplete="off"
+					    />
+					    <button type="submit" style="display: none;"></button>
+					</form>
+				    <span>Tất cả danh mục</span>
                     
                     <!-- Modal Search -->
-                    <div th:class="${modalSearch} ? 'modal-search' : 'modal-search hide'">
-                        <!-- List Name Product -->
-                        <div th:each="item, iterStat : ${listNameProduct}" 
-                             th:class="${selectedIndex == iterStat.index} ? 'modal-search-item selected' : 'modal-search-item'">
-                            <span class="name" th:text="${item}"></span>
-                            <i class="fa-solid fa-arrow-right"></i>
+                    <div class="modal-search hide">
+                        <!-- Search Results will be populated by JavaScript -->
+                        <div class="search-results">
+                            <!-- Dynamic content from API -->
                         </div>
-                        
-                        <!-- Recommended Section -->
                         <div class="recommended">
                             <h3>Recommended</h3>
                             <div class="recommended-container">
-                                <div class="box" th:each="item : ${listRecommended}" data-aos="fade-up">
-                                    <a th:href="@{/{category}/{id}(category=${item.category}, id=${item.id})}">
-                                        <img th:src="${item.cover}" alt="" class="icon"/>
-                                    </a>
-                                    <h4 th:text="${item.name}"></h4>
-                                    <p>₫<span th:text="${item.price}"></span></p>
-                                </div>
+                                <!-- Dynamic content from API -->
                             </div>
                         </div>
                     </div>
@@ -92,7 +87,7 @@
                 <div style="position: relative;">
                     <div class="categories d_flex" data-aos="fade-right">
                         <span class="fa-solid fa-border-all"></span>
-                        <h4>Categories <i class="fa fa-chevron-down"></i></h4>
+                        <h4>Danh mục<i class="fa fa-chevron-down"></i></h4>
                     </div>
 
                     <!-- Modal Category -->
@@ -114,6 +109,12 @@
                                 <a th:href="@{/category/phu-kien}">
                                     <i class="fa-solid fa-bone"></i>
                                     <span>Phụ kiện</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a th:href="@{/products}">
+                                    <i class="fa-solid fa-dog"></i>
+                                    <span>Tất cả sản phẩm</span>
                                 </a>
                             </li>
                         </ul>

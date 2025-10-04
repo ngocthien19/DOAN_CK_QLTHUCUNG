@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.iotstar.entity.SanPham;
@@ -44,4 +45,14 @@ public class SanPhamServiceImpl implements SanPhamService {
     public Page<SanPham> findByDanhMuc(DanhMuc danhMuc, Pageable pageable) {
         return sanPhamRepository.findByDanhMuc(danhMuc, pageable);
     }
+
+	@Override
+	public Page<SanPham> findAll(Specification<SanPham> spec, Pageable pageable) {
+	    return sanPhamRepository.findAll(spec, pageable);
+	}
+	
+	@Override
+	public List<SanPham> findAll() {
+	    return sanPhamRepository.findAll();
+	}
 }
