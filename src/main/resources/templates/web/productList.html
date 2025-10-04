@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${categoryName} + ' Products'">Products</title>
+
+    <!-- Google Fonts - Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" th:href="@{/css/web/header.css}">
+    <link rel="stylesheet" th:href="@{/css/web/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/web/Product.css}">
+    <link rel="stylesheet" th:href="@{/css/web/FilterProCat.css}">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AOS Animation -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+</head>
+<body>
+    <!-- Include Header Fragment -->
+    <div th:replace="~{web/layout/header :: header}"></div>
+
+    <!-- Product Detail Section -->
+    <div class="product-detail">
+        <!-- Banner -->
+        <img th:src="@{${bannerUrl}}" alt="Category Banner" class="banner" data-aos="fade-down" />
+        
+        <!-- Title -->
+        <h2 class="title" data-aos="fade-down" th:text="'Sản phẩm ' + ${categoryName}">Category Products</h2>
+        
+        <div class="content">
+            <!-- Left Sidebar - Filter -->
+            <div class="product-detail-left">
+                <!-- Price Range Filter -->
+                <div class="price-range">
+                    <div class="box-price">
+                        <span>Price</span>
+                        <i class="fa-solid fa-chevron-up"></i>
+                    </div>
+                    <div class="checkbox-container">
+                        <div class="checkbox">
+                            <input type="checkbox" id="below10" name="price" value="below10" />
+                            <label for="below10">Below 10.000.000₫</label>
+                        </div>
+                        <div class="checkbox">
+                            <input type="checkbox" id="1015" name="price" value="1015" />
+                            <label for="1015">10.000.000₫ - 15.000.000₫</label>
+                        </div>
+                        <div class="checkbox">
+                            <input type="checkbox" id="1520" name="price" value="1520" />
+                            <label for="1520">15.000.000₫ - 20.000.000₫</label>
+                        </div>
+                        <div class="checkbox">
+                            <input type="checkbox" id="2025" name="price" value="2025" />
+                            <label for="2025">20.000.000₫ - 25.000.000₫</label>
+                        </div>
+                        <div class="checkbox">
+                            <input type="checkbox" id="above25" name="price" value="above25" />
+                            <label for="above25">Above 25.000.000₫</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cửa hàng Filter -->
+                <div class="price-range">
+                    <div class="box-price">
+                        <span>Cửa hàng</span>
+                        <i class="fa-solid fa-chevron-up"></i>
+                    </div>
+                    <div class="checkbox-container">
+                        <div th:each="store, iterStat : ${stores}" class="checkbox">
+                            <input type="checkbox" th:id="'store-' + ${iterStat.index}" 
+                                   name="store" th:value="${store}" />
+                            <label th:for="'store-' + ${iterStat.index}" th:text="${store}"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loại sản phẩm Filter -->
+                <div class="price-range">
+                    <div class="box-price">
+                        <span>Loại sản phẩm</span>
+                        <i class="fa-solid fa-chevron-up"></i>
+                    </div>
+                    <div class="checkbox-container">
+                        <div th:each="loai, iterStat : ${loaiSanPhams}" class="checkbox">
+                            <input type="checkbox" th:id="'loai-' + ${iterStat.index}" 
+                                   name="loai" th:value="${loai}" />
+                            <label th:for="'loai-' + ${iterStat.index}" th:text="${loai}"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Số sao Filter -->
+                <div class="price-range">
+                    <div class="box-price">
+                        <span>Đánh giá</span>
+                        <i class="fa-solid fa-chevron-up"></i>
+                    </div>
+                    <div class="checkbox-container">
+                        <div class="checkbox">
+                            <input type="checkbox" id="star-none" name="star" value="0" />
+                            <label for="star-none">Không có đánh giá</label>
+                        </div>
+                        <div class="checkbox">
+                            <input type="checkbox" id="star-12" name="star" value="12" />
+                            <label for="star-12">
+                                <i class="fa fa-star filled"></i>
+                                <i class="fa fa-star filled"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                (1-2 sao)
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <input type="checkbox" id="star-23" name="star" value="23" />
+                            <label for="star-23">
+                                <i class="fa fa-star filled"></i>
+                                <i class="fa fa-star filled"></i>
+                                <i class="fa fa-star filled"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                (2-3 sao)
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <input type="checkbox" id="star-34" name="star" value="34" />
+                            <label for="star-34">
+                                <i class="fa fa-star filled"></i>
+                                <i class="fa fa-star filled"></i>
+                                <i class="fa fa-star filled"></i>
+                                <i class="fa fa-star filled"></i>
+                                <i class="fa fa-star"></i>
+                                (3-4 sao)
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <input type="checkbox" id="star-45" name="star" value="45" />
+                            <label for="star-45">
+                                <i class="fa fa-star filled"></i>
+                                <i class="fa fa-star filled"></i>
+                                <i class="fa fa-star filled"></i>
+                                <i class="fa fa-star filled"></i>
+                                <i class="fa fa-star filled"></i>
+                                (4-5 sao)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Content - Products -->
+            <div class="product-detail-right">
+                <!-- Sort and Count Section -->
+                <div class="content-found" id="product-header">
+                    <span class="desc" id="product-count">
+                        <span th:text="${totalElements}">0</span> items
+                    </span>
+                    <div class="sort-by">
+                        <span>Sort By:</span>
+                        <select id="sort-select">
+                            <option value="default">Best match</option>
+                            <option value="asc-name">Name Product (A-Z)</option>
+                            <option value="dsc-name">Name Product (Z-A)</option>
+                            <option value="asc-price">Price low to high</option>
+                            <option value="dsc-price">Price high to low</option>
+                            <option value="asc-like">Liked low to high</option>
+                            <option value="dsc-like">Liked high to low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- No Products Found -->
+                <div class="no-found" id="no-products" style="display: none;">
+                    <span class="no-item">Search No Result</span>
+                    <p class="no-item-desc">We're sorry. We cannot find any matches for your search term.</p>
+                    <img th:src="@{/images/order.png}" alt="No products" />
+                </div>
+
+                <!-- Products Grid -->
+                <div class="container-product" id="products-container">
+                    <!-- CHỈ SỬ DỤNG 1 VÒNG LẶP -->
+                    <div th:each="product : ${products}" class="product-card" 
+                         th:attr="data-price=${product.GiaBan}, 
+                                  data-store=${product.cuaHang.tenCuaHang},
+                                  data-loai=${product.loaiSanPham},
+                                  data-star=${product.SaoDanhGia},
+                                  data-name=${product.TenSanPham},
+                                  data-like=${product.LuotThich}">
+                        <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.MaSanPham})}">
+                            <img th:src="${product.HinhAnh}" th:alt="${product.TenSanPham}" class="product-image">
+                        </a>
+                        <div class="product-info">
+                            <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.MaSanPham})}">
+                                <h4 th:text="${product.TenSanPham}"></h4>
+                            </a>
+                            <div class="product-price" th:text="'₫' + ${#numbers.formatDecimal(product.GiaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
+                            <div class="rating">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}"
+                                      class="fa fa-star"
+                                      th:classappend="${i <= product.SaoDanhGia} ? ' filled' : ''"></span>
+                            </div>
+                            <button class="add-to-cart-btn" th:onclick="|addToCart('${product.MaSanPham}')|">
+                                <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination Section - Thymeleaf -->
+                <div class="pagination-container" id="pagination-container" th:if="${totalPages > 1}">
+                    <div class="pagination">
+                        <!-- Previous Button -->
+                        <a th:if="${currentPage > 1}" 
+                           th:href="@{${pageUrl} + '?page=' + ${currentPage - 1}}"
+                           class="pagination-btn prev-btn">
+                            <i class="fa fa-chevron-left"></i> Previous
+                        </a>
+                        <span th:unless="${currentPage > 1}" 
+                              class="pagination-btn prev-btn disabled">
+                            <i class="fa fa-chevron-left"></i> Previous
+                        </span>
+                        
+                        <!-- Page Numbers -->
+                        <div class="pagination-numbers">
+                            <!-- First Page -->
+                            <a th:if="${currentPage > 3}" 
+                               th:href="@{${pageUrl} + '?page=1'}"
+                               class="pagination-btn page-number">
+                                1
+                            </a>
+                            <span th:if="${currentPage > 4}" class="pagination-ellipsis">...</span>
+                            
+                            <!-- Pages around current page -->
+                            <a th:each="i : ${#numbers.sequence(Math.max(1, currentPage - 2), Math.min(totalPages, currentPage + 2))}"
+                               th:href="@{${pageUrl} + '?page=' + ${i}}"
+                               th:classappend="${i == currentPage} ? 'active' : ''"
+                               class="pagination-btn page-number">
+                                <span th:text="${i}"></span>
+                            </a>
+                            
+                            <!-- Last Page -->
+                            <span th:if="${currentPage < totalPages - 3}" class="pagination-ellipsis">...</span>
+                            <a th:if="${currentPage < totalPages - 2}" 
+                               th:href="@{${pageUrl} + '?page=' + ${totalPages}}"
+                               class="pagination-btn page-number">
+                                <span th:text="${totalPages}"></span>
+                            </a>
+                        </div>
+                        
+                        <!-- Next Button -->
+                        <a th:if="${currentPage < totalPages}" 
+                           th:href="@{${pageUrl} + '?page=' + ${currentPage + 1}}"
+                           class="pagination-btn next-btn">
+                            Next <i class="fa fa-chevron-right"></i>
+                        </a>
+                        <span th:unless="${currentPage < totalPages}" 
+                              class="pagination-btn next-btn disabled">
+                            Next <i class="fa fa-chevron-right"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Footer Fragment -->
+    <div th:replace="~{web/layout/footer :: footer}"></div>
+
+    <!-- AOS Animation Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize AOS
+            AOS.init({
+                duration: 800,
+                once: true
+            });
+
+            // Initialize all filter sections as active
+            document.querySelectorAll('.price-range').forEach(section => {
+                section.classList.add('active');
+            });
+
+            // Add click event to filter headers
+            document.querySelectorAll('.box-price').forEach(header => {
+                header.addEventListener('click', function() {
+                    const priceRange = this.parentElement;
+                    priceRange.classList.toggle('active');
+                });
+            });
+        });
+    </script>
+
+    <!-- Filter and Sort Script -->
+    <script th:src="@{/js/web/filterAndSortProduct.js}"></script>
+    
+    <!-- Main JavaScript -->
+    <script th:src="@{/js/web/header.js}"></script>
+</body>
+</html>
