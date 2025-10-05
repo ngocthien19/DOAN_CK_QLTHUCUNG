@@ -274,27 +274,33 @@
                 </div>
 
                 <!-- Products Grid -->
-                <div class="container-product" th:if="${totalElements > 0}">
-                    <div th:each="product : ${products}" class="product-card">
-                        <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.maSanPham})}">
-                            <img th:src="${product.hinhAnh}" th:alt="${product.tenSanPham}" class="product-image">
-                        </a>
-                        <div class="product-info">
-                            <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.maSanPham})}">
-                                <h4 th:text="${product.tenSanPham}"></h4>
-                            </a>
-                            <div class="product-price" th:text="'₫' + ${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
-                            <div class="rating">
-                                <span th:each="i : ${#numbers.sequence(1, 5)}"
-                                      class="fa fa-star"
-                                      th:classappend="${product.saoDanhGia != null && i <= product.saoDanhGia} ? ' filled' : ''"></span>
-                            </div>
-                            <button class="add-to-cart-btn" th:onclick="|addToCart('${product.maSanPham}')|">
-                                <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
-                            </button>
-                        </div>
-                    </div>
-                </div>
+				<div class="container-product" th:if="${totalElements > 0}">
+				    <div th:each="product : ${products}" class="product-card">
+				        <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.maSanPham})}">
+				            <img th:src="${product.hinhAnh}" th:alt="${product.tenSanPham}" class="product-image">
+				        </a>
+				        <div class="product-info">
+				            <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.maSanPham})}">
+				                <h4 th:text="${product.tenSanPham}"></h4>
+				            </a>
+				            <div class="product-price" th:text="'₫' + ${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
+				            <div class="product-stats">
+				                <div class="rating">
+				                    <span th:each="i : ${#numbers.sequence(1, 5)}"
+				                          class="fa fa-star"
+				                          th:classappend="${product.saoDanhGia != null && i <= product.saoDanhGia} ? ' filled' : ''"></span>
+				                </div>
+				                <div class="product-sold">
+				                    <span class="sold-label">Đã bán:</span>
+				                    <span class="sold-count" th:text="${product.soLuongDaBan}"></span>
+				                </div>
+				            </div>
+				            <button class="add-to-cart-btn" th:onclick="|addToCart('${product.maSanPham}')|">
+				                <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
+				            </button>
+				        </div>
+				    </div>
+				</div>
 
                 <!-- Pagination Section -->
                 <div class="pagination-container" th:if="${totalPages > 1}">

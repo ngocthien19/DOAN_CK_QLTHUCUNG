@@ -36,7 +36,7 @@
                     </a>
                 </div>
                 <div class="search-box f_flex" data-aos="fade-left">
-                    <form th:action="@{/search}" method="get" accept-charset="UTF-8" style="display: flex; width: 100%; align-items: center;">
+                    <form th:action="@{/products}" method="get" accept-charset="UTF-8" style="display: flex; width: 100%; align-items: center;">
 					    <i class="fa fa-search"></i>
 					    <input
 					        id="search-input"
@@ -67,14 +67,47 @@
                 </div>
 
                 <div class="icon f_flex width" data-aos="fade-left">
-                    <a th:href="@{/user}">
-                        <i class="fa fa-user icon-circle"></i>
-                    </a>
-                    <div class="cart">
-                        <a th:href="@{/cart}">
-                            <i class="fa fa-shopping-bag icon-circle"></i>
-                            <span th:text="${cartQty != null && cartQty > 0 ? cartQty : '0'}"></span>
+                    <!-- Hiển thị khi CHƯA đăng nhập -->
+                    <div class="auth-buttons" id="authButtons" style="display: none;">
+                        <a th:href="@{/login}" class="login-btn">
+                            <i class="fa fa-sign-in icon-circle"></i>
+                            <span>Đăng nhập</span>
                         </a>
+                        <a th:href="@{/register}" class="register-btn">
+                            <i class="fa fa-user-plus icon-circle"></i>
+                            <span>Đăng ký</span>
+                        </a>
+                    </div>
+
+                    <!-- Hiển thị khi ĐÃ đăng nhập -->
+                    <div class="user-menu" id="userMenu" style="display: none;">
+                        <div class="user-dropdown">
+                            <a href="#" class="user-info">
+                                <i class="fa fa-user icon-circle"></i>
+                                <span id="userName">User</span>
+                                <i class="fa fa-chevron-down"></i>
+                            </a>
+                            <div class="dropdown-content">
+                                <a th:href="@{/user}">
+                                    <i class="fa fa-user"></i>
+                                    Tài khoản
+                                </a>
+                                <a th:href="@{/orders}">
+                                    <i class="fa fa-shopping-bag"></i>
+                                    Đơn hàng
+                                </a>
+                                <a href="#" onclick="logout()">
+                                    <i class="fa fa-sign-out"></i>
+                                    Đăng xuất
+                                </a>
+                            </div>
+                        </div>
+                        <div class="cart">
+                            <a th:href="@{/cart}">
+                                <i class="fa fa-shopping-bag icon-circle"></i>
+                                <span id="cartQty">0</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -85,10 +118,18 @@
             <div class="container d_flex">
                 <!-- Categories Dropdown -->
                 <div style="position: relative;">
-                    <div class="categories d_flex" data-aos="fade-right">
-                        <span class="fa-solid fa-border-all"></span>
-                        <h4>Danh mục<i class="fa fa-chevron-down"></i></h4>
-                    </div>
+                	<div class="categories-cont">
+                		<div class="categories d_flex" data-aos="fade-right">
+	                        <span class="fa-solid fa-border-all"></span>
+	                        <h4>Danh mục<i class="fa fa-chevron-down"></i></h4>
+	                    </div>
+	                    
+	                    <a class="categories" data-aos="fade-right" th:href="@{/stores}">
+	                        <span class="fa-solid fa-store"></span>
+	                        <h4>Các cửa hàng</h4>
+	                    </a>
+                	</div>
+                    
 
                     <!-- Modal Category -->
                     <div class="modal-category">
@@ -129,15 +170,16 @@
                                 <hr th:if="${activeMenu == 'home'}" data-aos="fade-right"/>
                             </li>
                         </a>
-                        <a th:href="@{/user}">
+                        <!-- Ẩn User account khi chưa đăng nhập -->
+                        <a th:href="@{/user}" id="userAccountLink" style="display: none;">
                             <li th:class="${activeMenu == 'user'} ? 'nav_link_item active' : 'nav_link_item'">
-                                User account
+                                Tài khoản
                                 <hr th:if="${activeMenu == 'user'}" data-aos="fade-right"/>
                             </li>
                         </a>
                         <a th:href="@{/track-order}">
                             <li th:class="${activeMenu == 'track-order'} ? 'nav_link_item active' : 'nav_link_item'">
-                                Track my order
+                                Theo dõi đơn hàng
                                 <hr th:if="${activeMenu == 'track-order'}" data-aos="fade-right"/>
                             </li>
                         </a>
@@ -148,6 +190,177 @@
                 </div>
             </div>
         </section>
+
+        <script>
+            // Kiểm tra trạng thái đăng nhập khi trang load
+            document.addEventListener('DOMContentLoaded', function() {
+                checkAuthStatus();
+            });
+
+            function checkAuthStatus() {
+                const token = localStorage.getItem('jwtToken');
+                const userData = localStorage.getItem('user');
+                const authButtons = document.getElementById('authButtons');
+                const userMenu = document.getElementById('userMenu');
+                const userAccountLink = document.getElementById('userAccountLink');
+                
+                if (token && userData) {
+                    // Đã đăng nhập
+                    authButtons.style.display = 'none';
+                    userMenu.style.display = 'flex';
+                    userAccountLink.style.display = 'block';
+                    
+                    try {
+                        const user = JSON.parse(userData);
+                        document.getElementById('userName').textContent = user.username || 'User';
+                    } catch (e) {
+                        console.error('Error parsing user data:', e);
+                    }
+                    
+                    // Load cart quantity
+                    loadCartQuantity();
+                } else {
+                    // Chưa đăng nhập
+                    authButtons.style.display = 'flex';
+                    userMenu.style.display = 'none';
+                    userAccountLink.style.display = 'none';
+                }
+            }
+
+            function loadCartQuantity() {
+                const token = localStorage.getItem('jwtToken');
+                if (!token) return;
+
+                fetch('/api/cart/quantity', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('cartQty').textContent = data.data;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading cart quantity:', error);
+                });
+            }
+
+            function logout() {
+                localStorage.removeItem('jwtToken');
+                localStorage.removeItem('user');
+                window.location.href = '/';
+            }
+
+            // Dropdown user menu
+            document.addEventListener('click', function(e) {
+                const userDropdown = document.querySelector('.user-dropdown');
+                if (userDropdown && !userDropdown.contains(e.target)) {
+                    const dropdownContent = userDropdown.querySelector('.dropdown-content');
+                    dropdownContent.style.display = 'none';
+                }
+            });
+
+            document.querySelector('.user-info')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                const dropdownContent = this.parentElement.querySelector('.dropdown-content');
+                dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+            });
+        </script>
+
+        <style>
+            .auth-buttons {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+            }
+
+            .auth-buttons a {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                padding: 8px 12px;
+                border-radius: 20px;
+                text-decoration: none;
+                color: #333;
+                transition: all 0.3s ease;
+            }
+
+            .auth-buttons .login-btn {
+                background: #f8f9fa;
+                border: 1px solid #dee2e6;
+            }
+
+            .auth-buttons .register-btn {
+                background: #007bff;
+                color: white;
+                border: 1px solid #007bff;
+            }
+
+            .auth-buttons a:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            }
+
+            .user-menu {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .user-dropdown {
+                position: relative;
+            }
+
+            .user-info {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 12px;
+                border-radius: 20px;
+                background: #f8f9fa;
+                text-decoration: none;
+                color: #333;
+                transition: all 0.3s ease;
+            }
+
+            .user-info:hover {
+                background: #e9ecef;
+            }
+
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: white;
+                min-width: 200px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                border-radius: 8px;
+                z-index: 2;
+                margin-top: 5px;
+            }
+
+            .dropdown-content a {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 12px 15px;
+                text-decoration: none;
+                color: #333;
+                border-bottom: 1px solid #f8f9fa;
+                transition: background 0.3s ease;
+            }
+
+            .dropdown-content a:last-child {
+                border-bottom: none;
+            }
+
+            .dropdown-content a:hover {
+                background: #f8f9fa;
+            }
+        </style>
     </header>
 </body>
 </html>

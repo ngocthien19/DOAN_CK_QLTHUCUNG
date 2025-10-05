@@ -16,7 +16,7 @@
     <link rel="stylesheet" th:href="@{/css/web/Product.css}">
     <link rel="stylesheet" th:href="@{/css/web/FilterProCat.css}">
     <link rel="stylesheet" th:href="@{/css/web/pagination.css}">
-    <link rel="stylesheet" th:href="@{/css/web/store.css}">
+    <link rel="stylesheet" th:href="@{/css/web/storeDetail.css}">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -35,37 +35,37 @@
             <div class="store-header" data-aos="fade-up">
                 <div class="store-info-main">
                     <div class="store-avatar">
-                        <img th:src="${cuaHang.hinhAnh != null ? cuaHang.hinhAnh : '/images/store-avatar-default.jpg'}" 
-                             th:alt="${cuaHang.tenCuaHang}" 
+                        <img th:src="${cuaHang.HinhAnh != null ? cuaHang.HinhAnh : '/images/store-avatar-default.jpg'}" 
+                             th:alt="${cuaHang.TenCuaHang}" 
                              class="avatar-image">
                     </div>
                     <div class="store-details">
-                        <h1 th:text="${cuaHang.tenCuaHang}" class="store-name"></h1>
+                        <h1 th:text="${cuaHang.TenCuaHang}" class="store-name"></h1>
                         <div class="store-meta">
                             <div class="meta-item">
                                 <i class="fa-solid fa-location-dot"></i>
-                                <span th:text="${cuaHang.diaChi != null ? cuaHang.diaChi : 'Đang cập nhật'}"></span>
+                                <span th:text="${cuaHang.DiaChi != null ? cuaHang.DiaChi : 'Đang cập nhật'}"></span>
                             </div>
                             <div class="meta-item">
                                 <i class="fa-solid fa-phone"></i>
-                                <span th:text="${cuaHang.soDienThoai != null ? cuaHang.soDienThoai : 'Đang cập nhật'}"></span>
+                                <span th:text="${cuaHang.SoDienThoai != null ? cuaHang.SoDienThoai : 'Đang cập nhật'}"></span>
                             </div>
                             <div class="meta-item">
                                 <i class="fa-solid fa-envelope"></i>
-                                <span th:text="${cuaHang.email != null ? cuaHang.email : 'Đang cập nhật'}"></span>
+                                <span th:text="${cuaHang.Email != null ? cuaHang.Email : 'Đang cập nhật'}"></span>
                             </div>
                         </div>
                         <div class="store-rating">
                             <div class="rating-stars">
                                 <span th:each="i : ${#numbers.sequence(1, 5)}"
                                       class="fa fa-star"
-                                      th:classappend="${cuaHang.danhGiaTrungBinh != null && i <= cuaHang.danhGiaTrungBinh} ? ' filled' : ''"></span>
+                                      th:classappend="${cuaHang.DanhGiaTrungBinh != null && i <= cuaHang.DanhGiaTrungBinh} ? ' filled' : ''"></span>
                             </div>
-                            <span class="rating-text" th:if="${cuaHang.danhGiaTrungBinh != null}">
-                                <span th:text="${#numbers.formatDecimal(cuaHang.danhGiaTrungBinh, 1, 1)}"></span>/5 (
-                                <span th:text="${cuaHang.soLuongDanhGia != null ? cuaHang.soLuongDanhGia : '0'}"></span> đánh giá)
+                            <span class="rating-text" th:if="${cuaHang.DanhGiaTrungBinh != null}">
+                                <span th:text="${#numbers.formatDecimal(cuaHang.DanhGiaTrungBinh, 1, 1)}"></span>/5 (
+                                <span th:text="${cuaHang.SoLuongDanhGia != null ? cuaHang.SoLuongDanhGia : '0'}"></span> đánh giá)
                             </span>
-                            <span class="rating-text" th:unless="${cuaHang.danhGiaTrungBinh != null}">
+                            <span class="rating-text" th:unless="${cuaHang.DanhGiaTrungBinh != null}">
                                 Chưa có đánh giá
                             </span>
                         </div>
@@ -76,7 +76,7 @@
             <!-- Store Description -->
             <div class="store-description" data-aos="fade-up" data-aos-delay="100">
                 <h3>Giới thiệu về cửa hàng</h3>
-                <p th:text="${cuaHang.moTa != null ? cuaHang.moTa : 'Cửa hàng chưa có mô tả.'}"></p>
+                <p th:text="${cuaHang.MoTa != null ? cuaHang.MoTa : 'Cửa hàng chưa có mô tả.'}"></p>
             </div>
 
             <!-- Store Statistics -->
@@ -86,15 +86,15 @@
                     <div class="stat-label">Sản phẩm</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" th:text="${cuaHang.soLuongDanhGia != null ? cuaHang.soLuongDanhGia : '0'}">0</div>
+                    <div class="stat-number" th:text="${cuaHang.SoLuongDanhGia != null ? cuaHang.SoLuongDanhGia : '0'}">0</div>
                     <div class="stat-label">Đánh giá</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" th:text="${cuaHang.namThanhLap != null ? cuaHang.namThanhLap : '2020'}">2020</div>
+                    <div class="stat-number" th:text="${cuaHang.NamThanhLap != null ? cuaHang.NamThanhLap : '2020'}">2020</div>
                     <div class="stat-label">Năm thành lập</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" th:text="${cuaHang.trangThai ? 'Đang mở' : 'Đã đóng'}">Đang mở</div>
+                    <div class="stat-number" th:text="${cuaHang.TrangThai ? 'Đang mở' : 'Đã đóng'}">Đang mở</div>
                     <div class="stat-label">Trạng thái</div>
                 </div>
             </div>
@@ -106,11 +106,11 @@
         <div class="container">
             <div class="section-header" data-aos="fade-up">
                 <h2>Sản phẩm của cửa hàng</h2>
-                <p th:text="'Khám phá ' + ${tongSanPham} + ' sản phẩm từ ' + ${cuaHang.tenCuaHang}"></p>
+                <p th:text="'Khám phá ' + ${tongSanPham} + ' sản phẩm từ ' + ${cuaHang.TenCuaHang}"></p>
             </div>
 
             <!-- Store Status Alert -->
-            <div th:if="${!cuaHang.trangThai}" class="store-closed-alert" data-aos="fade-up">
+            <div th:if="${!cuaHang.TrangThai}" class="store-closed-alert" data-aos="fade-up">
                 <div class="alert alert-warning">
                     <i class="fa-solid fa-store-slash"></i>
                     <span>Cửa hàng hiện đang tạm đóng cửa. Các sản phẩm không thể mua hàng cho đến khi cửa hàng mở lại.</span>
@@ -124,7 +124,7 @@
                 </div>
                 <div class="sort-by">
                     <span>Sắp xếp:</span>
-                    <form th:action="@{/store/{maCuaHang}(maCuaHang=${cuaHang.maCuaHang})}" method="get" style="display: inline;">
+                    <form th:action="@{/store/{MaCuaHang}(MaCuaHang=${cuaHang.MaCuaHang})}" method="get" style="display: inline;">
                         <select name="sort" onchange="this.form.submit()">
                             <option value="default" th:selected="${selectedSort == 'default'}">Mặc định</option>
                             <option value="asc-name" th:selected="${selectedSort == 'asc-name'}">Tên (A-Z)</option>
@@ -142,24 +142,24 @@
             <div class="container-product" th:if="${tongSanPham > 0}">
                 <div th:each="product : ${sanPhams}" class="product-card" data-aos="fade-up">
                     <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.maSanPham})}">
-                        <img th:src="${product.hinhAnh}" th:alt="${product.tenSanPham}" class="product-image">
+                        <img th:src="${product.HinhAnh}" th:alt="${product.TenSanPham}" class="product-image">
                     </a>
                     <div class="product-info">
-                        <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.maSanPham})}">
+                        <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.MaSanPham})}">
                             <h4 th:text="${product.tenSanPham}"></h4>
                         </a>
-                        <div class="product-price" th:text="'₫' + ${#numbers.formatDecimal(product.giaBan, 0, 'COMMA', 0, 'POINT')}"></div>
+                        <div class="product-price" th:text="'₫' + ${#numbers.formatDecimal(product.GiaBan, 0, 'COMMA', 0, 'POINT')}"></div>
                         <div class="rating">
                             <span th:each="i : ${#numbers.sequence(1, 5)}"
                                   class="fa fa-star"
-                                  th:classappend="${product.saoDanhGia != null && i <= product.saoDanhGia} ? ' filled' : ''"></span>
+                                  th:classappend="${product.SaoDanhGia != null && i <= product.SaoDanhGia} ? ' filled' : ''"></span>
                         </div>
                         <button class="add-to-cart-btn" 
-                                th:onclick="|addToCart('${product.maSanPham}')|"
-                                th:disabled="${!cuaHang.trangThai}"
-                                th:classappend="${!cuaHang.trangThai} ? 'disabled' : ''">
+                                th:onclick="|addToCart('${product.MaSanPham}')|"
+                                th:disabled="${!cuaHang.TrangThai}"
+                                th:classappend="${!cuaHang.TrangThai} ? 'disabled' : ''">
                             <i class="fa fa-shopping-cart"></i> 
-                            <span th:text="${cuaHang.trangThai ? 'Thêm vào giỏ hàng' : 'Tạm ngừng bán'}"></span>
+                            <span th:text="${cuaHang.TrangThai ? 'Thêm vào giỏ hàng' : 'Tạm ngừng bán'}"></span>
                         </button>
                     </div>
                 </div>
@@ -178,7 +178,7 @@
                 <div class="pagination">
                     <!-- Previous Button -->
                     <a th:if="${currentPage > 1}" 
-                       th:href="@{/store/{maCuaHang}(maCuaHang=${cuaHang.maCuaHang}, page=${currentPage - 1}, sort=${selectedSort})}"
+                       th:href="@{/store/{MaCuaHang}(MaCuaHang=${cuaHang.MaCuaHang}, page=${currentPage - 1}, sort=${selectedSort})}"
                        class="pagination-btn prev-btn">
                         <i class="fa fa-chevron-left"></i> Trước
                     </a>
@@ -192,7 +192,7 @@
                         <th:block th:with="startPage=${currentPage > 2 ? currentPage - 2 : 1}, 
                                            endPage=${currentPage + 2 < totalPages ? currentPage + 2 : totalPages}">
                             <a th:each="i : ${#numbers.sequence(startPage, endPage)}"
-                               th:href="@{/store/{maCuaHang}(maCuaHang=${cuaHang.maCuaHang}, page=${i}, sort=${selectedSort})}"
+                               th:href="@{/store/{MaCuaHang}(MaCuaHang=${cuaHang.MaCuaHang}, page=${i}, sort=${selectedSort})}"
                                th:classappend="${i == currentPage} ? 'active' : ''"
                                class="pagination-btn page-number">
                                 <span th:text="${i}"></span>
@@ -202,7 +202,7 @@
                     
                     <!-- Next Button -->
                     <a th:if="${currentPage < totalPages}" 
-                       th:href="@{/store/{maCuaHang}(maCuaHang=${cuaHang.maCuaHang}, page=${currentPage + 1}, sort=${selectedSort})}"
+                       th:href="@{/store/{MaCuaHang}(MaCuaHang=${cuaHang.MaCuaHang}, page=${currentPage + 1}, sort=${selectedSort})}"
                        class="pagination-btn next-btn">
                         Sau <i class="fa fa-chevron-right"></i>
                     </a>

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import vn.iotstar.entity.SanPham;
+import vn.iotstar.entity.CuaHang;
 import vn.iotstar.entity.DanhMuc;
 
 public interface SanPhamService {
@@ -20,4 +21,7 @@ public interface SanPhamService {
     Page<SanPham> findAll(Specification<SanPham> spec, Pageable pageable);
     
     List<SanPham> findAll();
+    
+    Page<SanPham> findByCuaHang(CuaHang cuaHang, Pageable pageable);
+    List<SanPham> findByCuaHang(CuaHang cuaHang);
 }

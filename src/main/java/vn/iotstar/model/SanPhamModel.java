@@ -37,6 +37,10 @@ public class SanPhamModel {
     @Min(value = 0, message = "Số lượng không được âm")
     private Integer soLuongConLai;
     
+    @NotNull(message = "Số lượng đã bán không được để trống")
+    @Min(value = 0, message = "Số lượng đã bán không được âm")
+    private Integer soLuongDaBan;
+    
     private Date ngayNhap;
     
     private String hinhAnh;

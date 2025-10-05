@@ -1,5 +1,6 @@
 .related-products {
-    margin-top: 150px;
+	width: 90%;
+    margin: 150px auto 0px;
     padding-bottom: 100px;
 }
 
@@ -81,18 +82,50 @@
     margin-bottom: 10px;
 }
 
+/* Product Stats - Rating và Đã bán */
+.product-card .product-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px 0;
+    padding: 8px 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
 .product-card .rating {
-    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
 }
 
 .product-card .rating .fa-star {
     color: #ddd;
     font-size: 14px;
     margin-right: 2px;
+    transition: color 0.3s ease;
 }
 
 .product-card .rating .fa-star.filled {
     color: #ffc107;
+}
+
+/* Sold Count */
+.product-card .product-sold {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+}
+
+.product-card .product-sold .sold-label {
+    font-weight: 500;
+    color: #888;
+}
+
+.product-card .product-sold .sold-count {
+    font-weight: 600;
+    color: #667eea;
 }
 
 .product-card .add-to-cart-btn {
@@ -110,6 +143,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+    margin-top: 10px;
 }
 
 .product-card .add-to-cart-btn:hover {
@@ -138,14 +172,28 @@
     .related-products .related-gird5 {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .related-products .title::after {
         display: none;
+    }
+
+    .product-card .product-stats {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
     }
 }
 
 @media (max-width: 576px) {
     .related-products .related-gird5 {
         grid-template-columns: 1fr;
+    }
+
+    .product-card .product-sold {
+        font-size: 12px;
+    }
+    
+    .product-card .rating .fa-star {
+        font-size: 13px;
     }
 }

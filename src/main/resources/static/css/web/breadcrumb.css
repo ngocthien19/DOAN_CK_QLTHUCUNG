@@ -1,73 +1,106 @@
 .breadcrumbs {
-	background: #f6f9fc;
+    background: #f6f9fc;
+    padding: 0;
 }
+
 .breadcrumb {
-    padding: 30px 0;
-    margin: 0 auto;
+    padding: 50px 0;
     max-width: 1400px;
     padding-left: 30px;
     padding-right: 30px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
+.breadcrumb a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* QUAN TRỌNG: Đặt font-size cho tất cả span trong breadcrumb */
 .breadcrumb span {
-    font-size: 16px;
-    color: #666;
+    font-size: 18px;  /* ✅ Đặt ở đây để áp dụng cho tất cả */
     transition: color 0.3s ease;
+    text-transform: capitalize;
 }
 
-.breadcrumb span:first-child {
+.breadcrumb a span {
+    color: #666;  /* Chỉ định màu, không định nghĩa font-size lại */
+}
+
+.breadcrumb a:first-child span {
     color: rgb(129, 129, 250);
-    cursor: pointer;
-    text-transform: capitalize;
     font-weight: 500;
 }
 
-.breadcrumb span:first-child:hover {
+.breadcrumb a:first-child:hover span {
+    color: rgb(99, 99, 220);
     text-decoration: underline;
 }
 
-.breadcrumb span:nth-of-type(2) {
+.breadcrumb a:nth-child(3) span {
     color: rgb(129, 129, 250);
-    cursor: pointer;
-    text-transform: capitalize;
     font-weight: 500;
 }
 
-.breadcrumb span:nth-of-type(2):hover {
+.breadcrumb a:nth-child(3):hover span {
+    color: rgb(99, 99, 220);
     text-decoration: underline;
 }
 
 .breadcrumb span:last-child {
     color: #333;
     font-weight: 600;
+    /* KHÔNG định nghĩa font-size ở đây nữa */
 }
 
 .breadcrumb i {
-    margin: 0 12px;
-    font-size: 12px;
+    font-size: 14px;
     color: #999;
+    margin: 0;
 }
 
-/* Responsive */
+/* Responsive - chỉ ghi đè khi cần */
 @media (max-width: 768px) {
     .breadcrumb {
-        padding: 20px;
-        font-size: 13px;
+        padding: 15px 20px;
+        gap: 6px;
     }
-
+    
+    .breadcrumb span {
+        font-size: 16px;  /* ✅ Ghi đè tất cả span */
+    }
+    
     .breadcrumb i {
-        margin: 0 8px;
+        font-size: 12px;
     }
 }
 
 @media (max-width: 576px) {
     .breadcrumb {
-        padding: 15px;
-        font-size: 12px;
+        padding: 12px 15px;
+        gap: 4px;
     }
-
+    
+    .breadcrumb span {
+        font-size: 14px;  /* ✅ Ghi đè tất cả span */
+    }
+    
     .breadcrumb i {
-        margin: 0 5px;
         font-size: 10px;
+    }
+}
+
+@media (max-width: 400px) {
+    .breadcrumb {
+        padding: 10px 12px;
+    }
+    
+    .breadcrumb span {
+        font-size: 12px;  /* ✅ Ghi đè tất cả span */
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.iotstar.entity.SanPham;
+import vn.iotstar.entity.CuaHang;
 import vn.iotstar.entity.DanhMuc;
 import vn.iotstar.repository.SanPhamRepository;
 import vn.iotstar.service.SanPhamService;
@@ -54,5 +55,15 @@ public class SanPhamServiceImpl implements SanPhamService {
 	@Override
 	public List<SanPham> findAll() {
 	    return sanPhamRepository.findAll();
+	}
+	
+	@Override
+	public Page<SanPham> findByCuaHang(CuaHang cuaHang, Pageable pageable) {
+	    return sanPhamRepository.findByCuaHang(cuaHang, pageable);
+	}
+
+	@Override
+	public List<SanPham> findByCuaHang(CuaHang cuaHang) {
+	    return sanPhamRepository.findByCuaHang(cuaHang);
 	}
 }

@@ -60,7 +60,6 @@ public class CuaHang {
     
     @Min(value = 0, message = "Đánh giá trung bình không được nhỏ hơn 0")
     @Max(value = 5, message = "Đánh giá trung bình không được lớn hơn 5")
-    @Digits(integer = 1, fraction = 1, message = "Đánh giá trung bình phải có định dạng số thập phân (ví dụ: 4.5)")
     @Column(name = "DanhGiaTrungBinh")
     private Double danhGiaTrungBinh;
     

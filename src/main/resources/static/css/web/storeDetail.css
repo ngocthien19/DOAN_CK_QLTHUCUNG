@@ -118,14 +118,18 @@
 
 .store-description p {
     color: #555;
-    line-height: 1.6;
+    line-height: 1.8;
     font-size: 15px;
+    text-align: justify; /* Căn đều hai bên */
+    text-justify: inter-word; /* Căn đều khoảng cách giữa các từ */
+    word-spacing: normal; /* Đảm bảo khoảng cách từ bình thường */
+    hyphens: auto; /* Tự động ngắt từ khi cần thiết */
 }
 
 /* Store Statistics */
 .store-statistics {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     margin-bottom: 40px;
 }

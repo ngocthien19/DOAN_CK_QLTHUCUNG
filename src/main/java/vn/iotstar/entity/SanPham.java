@@ -55,6 +55,12 @@ public class SanPham {
     @Builder.Default
     private Integer soLuongConLai = 0;
     
+    @NotNull(message = "Số lượng đã bán không được để trống")
+    @Min(value = 0, message = "Số lượng đã bán không được âm")
+    @Column(name = "SoLuongDaBan")
+    @Builder.Default
+    private Integer soLuongDaBan = 0;
+    
     @Temporal(TemporalType.DATE)
     @Column(name = "NgayNhap")
     private Date ngayNhap;

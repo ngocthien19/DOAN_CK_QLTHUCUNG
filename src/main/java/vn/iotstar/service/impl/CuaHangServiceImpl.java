@@ -3,6 +3,8 @@ package vn.iotstar.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import vn.iotstar.entity.CuaHang;
@@ -32,5 +34,21 @@ public class CuaHangServiceImpl implements CuaHangService {
     
     public List<CuaHang> findTop3NewestStores() {
         return cuaHangRepository.findTop3ByOrderByNgayTaoDesc();
+    }
+    
+    @Override
+    public Page<CuaHang> findAll(Pageable pageable) {
+        return cuaHangRepository.findAll(pageable);
+    }
+    
+    @Override
+    public Page<CuaHang> searchStores(String keyword, Pageable pageable) {
+        return cuaHangRepository.findByTenCuaHangContainingIgnoreCaseOrDiaChiContainingIgnoreCase(
+            keyword, keyword, pageable);
+    }
+    
+    @Override
+    public Page<CuaHang> findActiveStores(Pageable pageable) {
+        return cuaHangRepository.findByTrangThaiTrue(pageable);
     }
 }

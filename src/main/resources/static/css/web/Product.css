@@ -14,7 +14,7 @@
 }
 
 .title {
-	color: #e94560;
+    color: #e94560;
     text-align: center;
     font-size: 2.5rem;
     margin-bottom: 80px;
@@ -185,17 +185,49 @@
     margin-bottom: 12px;
 }
 
+/* Product Stats - Rating và Đã bán */
+.product-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px 0;
+    padding: 8px 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
 .rating {
-    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
 }
 
 .rating .fa-star {
     color: #ddd;
     font-size: 14px;
+    transition: color 0.3s ease;
 }
 
 .rating .fa-star.filled {
     color: #ffc107;
+}
+
+/* Sold Count */
+.product-sold {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+}
+
+.product-sold .sold-label {
+    font-weight: 500;
+    color: #888;
+}
+
+.product-sold .sold-count {
+    font-weight: 600;
+    color: #667eea;
 }
 
 .add-to-cart-btn {
@@ -213,6 +245,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+    margin-top: 10px;
 }
 
 .add-to-cart-btn:hover {
@@ -255,7 +288,7 @@
     opacity: 0.7;
 }
 
-/* Active Filters Styling - Version sobre */
+/* Active Filters Styling */
 .active-filters {
     display: flex;
     flex-wrap: wrap;
@@ -322,31 +355,6 @@
     font-size: 11px;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .active-filters {
-        margin: 10px 0;
-    }
-    
-    .filter-tag,
-    .clear-all-filters {
-        font-size: 12px;
-        padding: 4px 10px;
-    }
-}
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .active-filters {
-        margin: 10px 0;
-    }
-    
-    .filter-tag,
-    .clear-all-filters {
-        font-size: 12px;
-        padding: 5px 10px;
-    }
-}
-
 .no-products {
     display: flex;
     justify-content: center;
@@ -360,7 +368,7 @@
     background-color: #f9f9f9;
 }
 
-.no-products .message p{
+.no-products .message p {
     font-size: 20px;
     color: #333;
     margin-bottom: 20px;
@@ -428,6 +436,22 @@
     .title {
         font-size: 2rem;
     }
+
+    .active-filters {
+        margin: 10px 0;
+    }
+    
+    .filter-tag,
+    .clear-all-filters {
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+    .product-stats {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -445,5 +469,13 @@
     
     .container-product {
         gap: 15px;
+    }
+
+    .product-sold {
+        font-size: 12px;
+    }
+    
+    .rating .fa-star {
+        font-size: 13px;
     }
 }

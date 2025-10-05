@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import vn.iotstar.entity.CuaHang;
 import vn.iotstar.entity.DanhMuc;
 import vn.iotstar.entity.SanPham;
 
@@ -29,4 +30,10 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer>,
     List<SanPham> findByDanhMuc(DanhMuc danhMuc);
     
     Page<SanPham> findByDanhMuc(DanhMuc danhMuc, Pageable pageable);
+    
+    @Query("SELECT s FROM SanPham s WHERE s.cuaHang = :cuaHang")
+    Page<SanPham> findByCuaHang(CuaHang cuaHang, Pageable pageable);
+
+    @Query("SELECT s FROM SanPham s WHERE s.cuaHang = :cuaHang")
+    List<SanPham> findByCuaHang(CuaHang cuaHang);
 }

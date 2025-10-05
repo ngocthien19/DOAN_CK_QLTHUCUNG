@@ -91,34 +91,63 @@
     padding: 0;
 }
 
-.details .d-right .box-rate {
+/* Product Stats trong trang chi tiết */
+.product-stats-detail {
     display: flex;
     align-items: center;
+    gap: 15px;
     margin-bottom: 30px;
+    padding: 15px 0;
+    border-bottom: 1px solid #e5e5e5;
 }
 
-.details .d-right .box-rate i {
-    color: #ffc107;
-    margin-right: 3px;
+.product-stats-detail .box-rate {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.product-stats-detail .box-rate .fa-star {
     font-size: 16px;
-}
-
-.details .d-right .box-rate i:not(.filled) {
     color: #ddd;
+    transition: color 0.3s ease;
 }
 
-.details .d-right .box-rate .sold {
-    color: #666;
-    opacity: 0.8;
-    padding-right: 15px;
-    border-right: 2px solid #ccc;
-    margin-left: 10px;
+.product-stats-detail .box-rate .fa-star.filled {
+    color: #ffa500;
 }
 
-.details .d-right .box-rate .like {
-    margin-left: 15px;
+/* Separator giữa các thông tin */
+.product-stats-detail .separator {
+    color: #ddd;
+    font-size: 16px;
+    font-weight: 300;
+}
+
+/* Sold Count trong trang chi tiết */
+.product-sold-detail {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+}
+
+.product-sold-detail .sold-label {
+    color: #888;
+    font-weight: 500;
+}
+
+.product-sold-detail .sold-count {
+    color: #667eea;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+/* Like section */
+.product-stats-detail .like {
     color: #666;
     font-size: 14px;
+    font-weight: 500;
 }
 
 .details .d-right .price {
@@ -268,6 +297,25 @@
         width: 100%;
         padding: 15px 30px;
     }
+
+    /* Responsive cho product stats */
+    .product-stats-detail {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .product-stats-detail .separator {
+        display: none;
+    }
+    
+    .product-sold-detail,
+    .product-stats-detail .like {
+        font-size: 13px;
+    }
+    
+    .product-stats-detail .box-rate .fa-star {
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -294,5 +342,13 @@
 
     .details .d-right .price .under {
         font-size: 24px;
+    }
+
+    /* Mobile layout cho product stats */
+    .product-stats-detail {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px 0;
     }
 }

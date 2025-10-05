@@ -260,17 +260,68 @@ a {
     background-color: #fff;
 }
 
-.rating {
-	margin-bottom: 25px;
-}
-/* Phần cho sao đã được đánh giá */
-.rating .fa-star.filled {
-    color: gold; /* Màu vàng cho các sao đã được đánh giá */
+/* Product Rating và Sold Container */
+.product-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px 0;
+    padding: 8px 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-/* Phần cho sao chưa được đánh giá */
+/* Rating Stars */
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
 .rating .fa-star {
-    color: lightgray; /* Màu xám cho các sao chưa được đánh giá */
+    font-size: 14px;
+    color: #ddd;
+    transition: color 0.3s ease;
+}
+
+.rating .fa-star.filled {
+    color: #ffa500;
+}
+
+/* Sold Count */
+.product-sold {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #666;
+}
+
+.product-sold .sold-label {
+    font-weight: 500;
+    color: #888;
+}
+
+.product-sold .sold-count {
+    font-weight: 600;
+    color: #667eea;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 480px) {
+    .product-stats {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .product-sold {
+        font-size: 12px;
+    }
+    
+    .rating .fa-star {
+        font-size: 13px;
+    }
 }
 
 .category-products-section.dog-section {
