@@ -26,6 +26,10 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer>,
     @Query("SELECT s FROM SanPham s WHERE s.danhMuc = :danhMuc AND s.maSanPham != :maSanPham")
     List<SanPham> findByDanhMucAndNotMaSanPham(DanhMuc danhMuc, Integer maSanPham);
     
+    // THÊM METHOD MỚI: Lấy sản phẩm cùng LoaiSanPham (trừ sản phẩm hiện tại)
+    @Query("SELECT s FROM SanPham s WHERE s.loaiSanPham = :loaiSanPham AND s.maSanPham != :maSanPham")
+    List<SanPham> findByLoaiSanPhamAndNotMaSanPham(String loaiSanPham, Integer maSanPham);
+    
     @Query("SELECT s FROM SanPham s WHERE s.danhMuc = :danhMuc")
     List<SanPham> findByDanhMuc(DanhMuc danhMuc);
     

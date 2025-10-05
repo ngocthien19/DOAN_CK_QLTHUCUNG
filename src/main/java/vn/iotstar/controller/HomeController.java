@@ -48,8 +48,15 @@ public class HomeController {
 
         for (DanhMuc danhMuc : danhMucs) {
             List<SanPham> sanPhams = sanPhamService.findTop4ByDanhMucOrderByNgayNhapDesc(danhMuc);
+            
+            // Xử lý ảnh sản phẩm
+            processProductImages(sanPhams);
+            
             model.addAttribute("sanPhams_" + danhMuc.getMaDanhMuc(), sanPhams);
         }
+
+        // Xử lý ảnh cửa hàng
+        processStoreImages(cuaHangs);
 
         model.addAttribute("danhMucs", danhMucs);
         model.addAttribute("cuaHangs", cuaHangs);
@@ -59,16 +66,40 @@ public class HomeController {
     @GetMapping("/view/{MaSanPham}")
     public String viewProductDetail(@PathVariable("MaSanPham") Integer maSanPham, Model model) {
         SanPham sanPham = sanPhamService.findByMaSanPham(maSanPham);
+        
+        if (sanPham == null) {
+            return "redirect:/";
+        }
+        
+        // Xử lý ảnh sản phẩm chính
+        processProductImage(sanPham);
 
-        List<SanPham> relatedProducts = sanPhamService.findRelatedProductsByCategoryExcludingCurrent(
-            sanPham.getDanhMuc(), maSanPham);
-        if (relatedProducts == null) {
-            relatedProducts = new ArrayList<>();
+        // SỬA LẠI: Lấy sản phẩm liên quan theo LoaiSanPham thay vì DanhMuc
+        List<SanPham> relatedProducts = new ArrayList<>();
+        if (sanPham.getLoaiSanPham() != null && !sanPham.getLoaiSanPham().isEmpty()) {
+            relatedProducts = sanPhamService.findRelatedProductsByLoaiSanPhamExcludingCurrent(
+                sanPham.getLoaiSanPham(), maSanPham);
+            
+            // Giới hạn chỉ lấy 4 sản phẩm liên quan
+            if (relatedProducts.size() > 4) {
+                relatedProducts = relatedProducts.subList(0, 4);
+            }
+        }
+        
+        // Xử lý ảnh sản phẩm liên quan
+        processProductImages(relatedProducts);
+
+        // Lấy tên cửa hàng từ sản phẩm
+        String storeName = "";
+        if (sanPham.getCuaHang() != null && sanPham.getCuaHang().getTenCuaHang() != null) {
+            storeName = sanPham.getCuaHang().getTenCuaHang();
         }
 
         model.addAttribute("ItemProduct", sanPham);
         model.addAttribute("relatedProducts", relatedProducts);
         model.addAttribute("categoryName", sanPham.getDanhMuc().getTenDanhMuc());
+        model.addAttribute("storeName", storeName);
+        model.addAttribute("loaiSanPham", sanPham.getLoaiSanPham()); // Thêm loaiSanPham nếu cần
 
         return "web/productDetail";
     }
@@ -101,13 +132,16 @@ public class HomeController {
         // Tạo Sort
         Sort sortObj = createSort(sort);
         
-        // Tạo Pageable - Database chỉ query đúng page cần thiết
+        // Tạo Pageable
         Pageable pageable = PageRequest.of(page - 1, size, sortObj);
         
         // Query với Specification
         Page<SanPham> productPage = sanPhamService.findAll(spec, pageable);
         
-        // Lấy danh sách stores và loại (không filter) cho dropdown
+        // Xử lý ảnh sản phẩm
+        processProductImages(productPage.getContent());
+        
+        // Lấy danh sách stores và loại cho dropdown
         List<SanPham> allProducts = sanPhamService.findByDanhMuc(danhMuc);
         
         List<String> stores = allProducts.stream()
@@ -147,6 +181,129 @@ public class HomeController {
         
         return "web/productList";
     }
+    
+    @GetMapping("/products")
+    public String allProducts(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(required = false) List<String> price,
+            @RequestParam(required = false) List<String> store,
+            @RequestParam(required = false) List<String> loai,
+            @RequestParam(required = false) List<String> star,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String search,
+            Model model) {
+        
+        // Decode UTF-8 cho search
+        if (search != null && !search.trim().isEmpty()) {
+            try {
+                search = java.net.URLDecoder.decode(search, "UTF-8");
+                search = search.trim();
+            } catch (Exception e) {
+                // Nếu đã decoded, tiếp tục
+            }
+        }
+        
+        // Tạo Specification (null cho danhMuc = tìm tất cả)
+        Specification<SanPham> spec = SanPhamSpecification.filterProducts(
+            null, price, store, loai, star, search
+        );
+        
+        // Tạo Sort
+        Sort sortObj = createSort(sort);
+        
+        // Query với Specification
+        Pageable pageable = PageRequest.of(page - 1, size, sortObj);
+        Page<SanPham> productPage = sanPhamService.findAll(spec, pageable);
+        
+        // Xử lý ảnh sản phẩm
+        processProductImages(productPage.getContent());
+        
+        // Lấy danh sách stores và loại cho filter
+        List<SanPham> allProducts = sanPhamService.findAll();
+        
+        List<String> stores = allProducts.stream()
+                .map(sp -> sp.getCuaHang().getTenCuaHang())
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+        
+        List<String> loaiSanPhams = allProducts.stream()
+                .map(SanPham::getLoaiSanPham)
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+        
+        // Add attributes
+        model.addAttribute("categoryName", "Tất cả sản phẩm");
+        model.addAttribute("products", productPage.getContent());
+        model.addAttribute("stores", stores);
+        model.addAttribute("loaiSanPhams", loaiSanPhams);
+        model.addAttribute("bannerUrl", "/images/banner-default.jpg");
+        
+        // Pagination
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("totalElements", productPage.getTotalElements());
+        model.addAttribute("pageUrl", "/products");
+        
+        // Selected filters
+        model.addAttribute("selectedPrices", price != null ? price : new ArrayList<>());
+        model.addAttribute("selectedStores", store != null ? store : new ArrayList<>());
+        model.addAttribute("selectedLoais", loai != null ? loai : new ArrayList<>());
+        model.addAttribute("selectedStars", star != null ? star : new ArrayList<>());
+        model.addAttribute("selectedSort", sort != null ? sort : "default");
+        model.addAttribute("searchKeyword", search != null ? search : "");
+        
+        return "web/products";
+    }
+    
+    // ========== CÁC PHƯƠNG THỨC XỬ LÝ ẢNH ==========
+    
+    /**
+     * Xử lý ảnh cho một sản phẩm
+     */
+    private void processProductImage(SanPham sanPham) {
+        if (sanPham != null) {
+            if (sanPham.getHinhAnh() != null && !sanPham.getHinhAnh().isEmpty()) {
+                sanPham.setHinhAnh("/images/" + sanPham.getHinhAnh());
+            } else {
+                sanPham.setHinhAnh("/images/default-product.jpg");
+            }
+        }
+    }
+    
+    /**
+     * Xử lý ảnh cho danh sách sản phẩm
+     */
+    private void processProductImages(List<SanPham> sanPhams) {
+        if (sanPhams != null) {
+            sanPhams.forEach(sp -> {
+                if (sp.getHinhAnh() != null && !sp.getHinhAnh().isEmpty()) {
+                    sp.setHinhAnh("/images/" + sp.getHinhAnh());
+                } else {
+                    sp.setHinhAnh("/images/default-product.jpg");
+                }
+            });
+        }
+    }
+    
+    /**
+     * Xử lý ảnh cho danh sách cửa hàng
+     */
+    private void processStoreImages(List<CuaHang> cuaHangs) {
+        if (cuaHangs != null) {
+            cuaHangs.forEach(ch -> {
+                if (ch.getHinhAnh() != null && !ch.getHinhAnh().isEmpty()) {
+                    ch.setHinhAnh("/images/" + ch.getHinhAnh());
+                } else {
+                    ch.setHinhAnh("/images/store-default.jpg");
+                }
+            });
+        }
+    }
+    
+    // ========== CÁC PHƯƠNG THỨC HỖ TRỢ ==========
     
     private Sort createSort(String sortType) {
         if (sortType == null || sortType.equals("default")) {
@@ -195,78 +352,5 @@ public class HomeController {
             default:
                 return "/images/banner-default.jpg";
         }
-    }
-    
-    @GetMapping("/products")
-    public String allProducts(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
-            @RequestParam(required = false) List<String> price,
-            @RequestParam(required = false) List<String> store,
-            @RequestParam(required = false) List<String> loai,
-            @RequestParam(required = false) List<String> star,
-            @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String search,
-            Model model) {
-        
-        // Decode UTF-8 pour le search
-        if (search != null && !search.trim().isEmpty()) {
-            try {
-                search = java.net.URLDecoder.decode(search, "UTF-8");
-                search = search.trim();
-            } catch (Exception e) {
-                // Si déjà décodé, continuer
-            }
-        }
-        
-        // Créer Specification (null pour danhMuc = chercher tout)
-        Specification<SanPham> spec = SanPhamSpecification.filterProducts(
-            null, price, store, loai, star, search
-        );
-        
-        // Créer Sort
-        Sort sortObj = createSort(sort);
-        
-        // Query avec Specification
-        Pageable pageable = PageRequest.of(page - 1, size, sortObj);
-        Page<SanPham> productPage = sanPhamService.findAll(spec, pageable);
-        
-        // Récupérer liste stores et loai pour filter
-        List<SanPham> allProducts = sanPhamService.findAll();
-        
-        List<String> stores = allProducts.stream()
-                .map(sp -> sp.getCuaHang().getTenCuaHang())
-                .distinct()
-                .sorted()
-                .collect(Collectors.toList());
-        
-        List<String> loaiSanPhams = allProducts.stream()
-                .map(SanPham::getLoaiSanPham)
-                .distinct()
-                .sorted()
-                .collect(Collectors.toList());
-        
-        // Add attributes
-        model.addAttribute("categoryName", "Tất cả sản phẩm");
-        model.addAttribute("products", productPage.getContent());
-        model.addAttribute("stores", stores);
-        model.addAttribute("loaiSanPhams", loaiSanPhams);
-        model.addAttribute("bannerUrl", "/images/banner-default.jpg");
-        
-        // Pagination
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", productPage.getTotalPages());
-        model.addAttribute("totalElements", productPage.getTotalElements());
-        model.addAttribute("pageUrl", "/products");
-        
-        // Selected filters
-        model.addAttribute("selectedPrices", price != null ? price : new ArrayList<>());
-        model.addAttribute("selectedStores", store != null ? store : new ArrayList<>());
-        model.addAttribute("selectedLoais", loai != null ? loai : new ArrayList<>());
-        model.addAttribute("selectedStars", star != null ? star : new ArrayList<>());
-        model.addAttribute("selectedSort", sort != null ? sort : "default");
-        model.addAttribute("searchKeyword", search != null ? search : "");
-        
-        return "web/products";
     }
 }

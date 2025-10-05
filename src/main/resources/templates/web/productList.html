@@ -281,9 +281,15 @@
                 <!-- Products Grid -->
 				<div class="container-product" th:if="${totalElements > 0}">
 				    <div th:each="product : ${products}" class="product-card">
-				        <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.maSanPham})}">
-				            <img th:src="${product.hinhAnh}" th:alt="${product.tenSanPham}" class="product-image">
-				        </a>
+				        <div class="product-image-container">
+					        <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.MaSanPham})}">
+					            <img th:src="${product.HinhAnh}" th:alt="${product.TenSanPham}" class="product-image">
+					        </a>
+					        <div class="product-like">
+					            <i class="fa-solid fa-heart like-icon"></i>
+					            <span class="like-count" th:text="${product.LuotThich} ?: 0">0</span>
+					        </div>
+					    </div>
 				        <div class="product-info">
 				            <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.maSanPham})}">
 				                <h4 th:text="${product.tenSanPham}"></h4>

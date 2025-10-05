@@ -14,10 +14,14 @@ public interface SanPhamService {
     List<SanPham> findTop4ByDanhMucOrderByNgayNhapDesc(DanhMuc danhMuc);
     SanPham findByMaSanPham(Integer maSanPham);
     List<SanPham> findRelatedProductsByCategoryExcludingCurrent(DanhMuc danhMuc, Integer maSanPham);
+    
+    // THÊM METHOD MỚI: Lấy sản phẩm cùng LoaiSanPham
+    List<SanPham> findRelatedProductsByLoaiSanPhamExcludingCurrent(String loaiSanPham, Integer maSanPham);
+    
     List<SanPham> findByDanhMuc(DanhMuc danhMuc);
     Page<SanPham> findByDanhMuc(DanhMuc danhMuc, Pageable pageable);
     
-    // Method mới cho Specification
+    // Method cho Specification
     Page<SanPham> findAll(Specification<SanPham> spec, Pageable pageable);
     
     List<SanPham> findAll();

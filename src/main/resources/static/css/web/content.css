@@ -388,6 +388,91 @@ a {
 .view-all-btn:hover i {
     transform: translateX(5px);
 }
+/* ============= PRODUCT LIKE STYLES ============= */
+.product-image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.product-like {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.product-like:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+}
+
+.like-icon {
+    color: #e94560;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.product-like:hover .like-icon {
+    transform: scale(1.2);
+    color: #ff2e63;
+}
+
+.like-count {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    min-width: 16px;
+    text-align: center;
+}
+
+/* Animation khi hover product card */
+.product-card:hover .product-like {
+    transform: translateY(-2px);
+}
+
+/* Responsive cho phần lượt thích */
+@media (max-width: 768px) {
+    .product-like {
+        top: 8px;
+        right: 8px;
+        padding: 6px 10px;
+    }
+    
+    .like-icon {
+        font-size: 12px;
+    }
+    
+    .like-count {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .product-like {
+        top: 6px;
+        right: 6px;
+        padding: 5px 8px;
+    }
+    
+    .like-icon {
+        font-size: 11px;
+    }
+    
+    .like-count {
+        font-size: 11px;
+    }
+}
 
 /* ============= FEATURES SECTION ============= */
 .features-section {

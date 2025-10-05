@@ -53,11 +53,11 @@
                     <!-- Rating và Sold section -->
                     <div class="product-stats-detail">
                         <div class="box-rate">
-                            <i class="fa fa-star" th:classappend="${ItemProduct.saoDanhGia >= 1} ? 'filled' : ''"></i>
-                            <i class="fa fa-star" th:classappend="${ItemProduct.saoDanhGia >= 2} ? 'filled' : ''"></i>
-                            <i class="fa fa-star" th:classappend="${ItemProduct.saoDanhGia >= 3} ? 'filled' : ''"></i>
-                            <i class="fa fa-star" th:classappend="${ItemProduct.saoDanhGia >= 4} ? 'filled' : ''"></i>
-                            <i class="fa fa-star" th:classappend="${ItemProduct.saoDanhGia >= 5} ? 'filled' : ''"></i>
+                            <i class="fa fa-star" th:classappend="${ItemProduct.SaoDanhGia >= 1} ? 'filled' : ''"></i>
+                            <i class="fa fa-star" th:classappend="${ItemProduct.SaoDanhGia >= 2} ? 'filled' : ''"></i>
+                            <i class="fa fa-star" th:classappend="${ItemProduct.SaoDanhGia >= 3} ? 'filled' : ''"></i>
+                            <i class="fa fa-star" th:classappend="${ItemProduct.SaoDanhGia >= 4} ? 'filled' : ''"></i>
+                            <i class="fa fa-star" th:classappend="${ItemProduct.SaoDanhGia >= 5} ? 'filled' : ''"></i>
                         </div>
                         <span class="separator">|</span>
                         <div class="product-sold-detail">
@@ -65,7 +65,10 @@
                             <span class="sold-count" th:text="${ItemProduct.SoLuongDaBan}"></span>
                         </div>
                         <span class="separator">|</span>
-                        <span class="like" th:text="'Lượt thích: ' + ${ItemProduct.LuotThich}"></span>
+                        <div class="product-like-detail">
+                            <i class="fa-solid fa-heart like-icon"></i>
+                            <span class="like-count" th:text="${ItemProduct.LuotThich} ?: 0"></span>
+                        </div>
                     </div>
 
                     <!-- Price section -->
@@ -96,33 +99,51 @@
     <!-- Related Products Section -->
     <section class="related-products">
         <h2 class="title" data-aos="fade-down">Sản phẩm liên quan</h2>
-        <div class="related-gird5">
+        
+        <!-- Hiển thị khi CÓ sản phẩm liên quan -->
+        <div th:if="${not #lists.isEmpty(relatedProducts)}" class="related-grid5">
             <div th:each="relatedProduct : ${relatedProducts}" class="product-card">
-                <div th:if="${relatedProduct != null}">
+                <div class="product-image-container">
                     <a th:href="@{/view/{MaSanPham}(MaSanPham=${relatedProduct.MaSanPham})}">
                         <img th:src="${relatedProduct.HinhAnh}" th:alt="${relatedProduct.TenSanPham}" class="product-image">
                     </a>
-                    <div class="product-info">
-                        <a th:href="@{/view/{MaSanPham}(MaSanPham=${relatedProduct.MaSanPham})}">
-                            <h4 th:text="${relatedProduct.TenSanPham}"></h4>
-                        </a>
-                        <div class="product-price" th:text="'₫' + ${relatedProduct.GiaBan} + ' VND'"></div>
-                        <div class="product-stats">
-                            <div class="rating">
-                                <span th:each="i : ${#numbers.sequence(1, 5)}" class="fa fa-star"
-                                    th:classappend="${i <= relatedProduct.SaoDanhGia} ? ' filled' : ''"></span>
-                            </div>
-                            <div class="product-sold">
-                                <span class="sold-label">Đã bán:</span>
-                                <span class="sold-count" th:text="${relatedProduct.SoLuongDaBan}"></span>
-                            </div>
-                        </div>
-                        <button class="add-to-cart-btn">
-                            <i class="fa fa-shopping-cart"></i> Thêm vào giỏ
-                        </button>
+                    <div class="product-like">
+                        <i class="fa-solid fa-heart like-icon"></i>
+                        <span class="like-count" th:text="${relatedProduct.LuotThich} ?: 0">0</span>
                     </div>
                 </div>
+                <div class="product-info">
+                    <a th:href="@{/view/{MaSanPham}(MaSanPham=${relatedProduct.MaSanPham})}">
+                        <h4 th:text="${relatedProduct.TenSanPham}"></h4>
+                    </a>
+                    <div class="product-price" th:text="'₫' + ${relatedProduct.GiaBan} + ' VND'"></div>
+                    <div class="product-stats">
+                        <div class="rating">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}" class="fa fa-star"
+                                th:classappend="${i <= relatedProduct.SaoDanhGia} ? ' filled' : ''"></span>
+                        </div>
+                        <div class="product-sold">
+                            <span class="sold-label">Đã bán:</span>
+                            <span class="sold-count" th:text="${relatedProduct.SoLuongDaBan}"></span>
+                        </div>
+                    </div>
+                    <button class="add-to-cart-btn">
+                        <i class="fa fa-shopping-cart"></i> Thêm vào giỏ
+                    </button>
+                </div>
             </div>
+        </div>
+        
+        <!-- Hiển thị khi KHÔNG CÓ sản phẩm liên quan -->
+        <div th:if="${#lists.isEmpty(relatedProducts)}" class="no-related-products">
+            <div class="no-related-icon">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <h3>Không có sản phẩm liên quan</h3>
+            <p>Hiện tại chưa có sản phẩm nào cùng loại với sản phẩm này.</p>
+            <a th:href="@{/category/__${categoryName}__}" class="browse-more-btn">
+                <i class="fa-solid fa-arrow-right"></i> Xem thêm sản phẩm khác
+            </a>
         </div>
     </section>
     

@@ -32,38 +32,44 @@ public class SanPhamServiceImpl implements SanPhamService {
         return sanPhamRepository.findByMaSanPham(maSanPham); 
     }
 
-	@Override
-	public List<SanPham> findRelatedProductsByCategoryExcludingCurrent(DanhMuc danhMuc, Integer maSanPham) {
-		return sanPhamRepository.findByDanhMucAndNotMaSanPham(danhMuc, maSanPham);
-	}
-	
-	@Override
+    @Override
+    public List<SanPham> findRelatedProductsByCategoryExcludingCurrent(DanhMuc danhMuc, Integer maSanPham) {
+        return sanPhamRepository.findByDanhMucAndNotMaSanPham(danhMuc, maSanPham);
+    }
+    
+    // THÊM METHOD MỚI: Lấy sản phẩm cùng LoaiSanPham
+    @Override
+    public List<SanPham> findRelatedProductsByLoaiSanPhamExcludingCurrent(String loaiSanPham, Integer maSanPham) {
+        return sanPhamRepository.findByLoaiSanPhamAndNotMaSanPham(loaiSanPham, maSanPham);
+    }
+    
+    @Override
     public List<SanPham> findByDanhMuc(DanhMuc danhMuc) {
         return sanPhamRepository.findByDanhMuc(danhMuc);
     }
 
-	@Override
+    @Override
     public Page<SanPham> findByDanhMuc(DanhMuc danhMuc, Pageable pageable) {
         return sanPhamRepository.findByDanhMuc(danhMuc, pageable);
     }
 
-	@Override
-	public Page<SanPham> findAll(Specification<SanPham> spec, Pageable pageable) {
-	    return sanPhamRepository.findAll(spec, pageable);
-	}
-	
-	@Override
-	public List<SanPham> findAll() {
-	    return sanPhamRepository.findAll();
-	}
-	
-	@Override
-	public Page<SanPham> findByCuaHang(CuaHang cuaHang, Pageable pageable) {
-	    return sanPhamRepository.findByCuaHang(cuaHang, pageable);
-	}
+    @Override
+    public Page<SanPham> findAll(Specification<SanPham> spec, Pageable pageable) {
+        return sanPhamRepository.findAll(spec, pageable);
+    }
+    
+    @Override
+    public List<SanPham> findAll() {
+        return sanPhamRepository.findAll();
+    }
+    
+    @Override
+    public Page<SanPham> findByCuaHang(CuaHang cuaHang, Pageable pageable) {
+        return sanPhamRepository.findByCuaHang(cuaHang, pageable);
+    }
 
-	@Override
-	public List<SanPham> findByCuaHang(CuaHang cuaHang) {
-	    return sanPhamRepository.findByCuaHang(cuaHang);
-	}
+    @Override
+    public List<SanPham> findByCuaHang(CuaHang cuaHang) {
+        return sanPhamRepository.findByCuaHang(cuaHang);
+    }
 }

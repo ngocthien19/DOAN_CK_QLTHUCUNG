@@ -4,10 +4,8 @@
 }
 
 .breadcrumb {
-    padding: 50px 0;
+    padding: 50px 95px;
     max-width: 1400px;
-    padding-left: 30px;
-    padding-right: 30px;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
