@@ -168,11 +168,12 @@ ul {
 .search-box > span {
     padding: 15px 25px;
     border-left: 2px solid #e0e0e0;
-    color: #666;
+    color: #0f3460;
     font-size: 15px;
     white-space: nowrap;
     background-color: #f8f9fa;
     cursor: pointer;
+    font-weight: 600;
 }
 
 .search .icon {

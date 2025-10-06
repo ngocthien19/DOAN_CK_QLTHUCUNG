@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotBlank;
 public class VaiTro {
     @Id
     @NotBlank(message = "Mã vai trò không được để trống")
-    @Column(name = "MaVaiTro", columnDefinition = "NVARCHAR(255)")
+    @Column(name = "MaVaiTro", columnDefinition = "VARCHAR(50)")
     private String maVaiTro;
     
     @NotBlank(message = "Tên vai trò không được để trống")

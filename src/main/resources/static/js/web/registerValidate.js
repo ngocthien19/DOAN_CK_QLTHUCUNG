@@ -164,6 +164,7 @@ function togglePassword(fieldId) {
 	}
 }
 
+// UPDATED: Xử lý submit form với OTP
 document.getElementById('registerForm').addEventListener('submit', function(e) {
 	e.preventDefault();
 
@@ -176,16 +177,16 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
 		email: document.getElementById('email').value.trim(),
 		matKhau: document.getElementById('matKhau').value,
 		sdt: document.getElementById('sdt').value.trim(),
-		diaChi: document.getElementById('diaChi').value.trim(),
-		maVaiTro: 'USER'
+		diaChi: document.getElementById('diaChi').value.trim()
 	};
 
 	const submitBtn = document.querySelector('.btn-register');
 	const originalText = submitBtn.innerHTML;
-	submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tạo tài khoản...';
+	submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi mã OTP...';
 	submitBtn.disabled = true;
 
-	fetch('/api/auth/register', {
+	// Gửi request tạo OTP
+	fetch('/api/auth/send-otp', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -196,11 +197,16 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
 		.then(data => {
 			if (data.success) {
 				showSuccess(data.message + ' Đang chuyển hướng...');
-				submitBtn.innerHTML = '<i class="fas fa-check"></i> Thành công!';
+				submitBtn.innerHTML = '<i class="fas fa-check"></i> Đã gửi OTP!';
 
+				// Lưu email và thông tin đăng ký vào sessionStorage
+				sessionStorage.setItem('registerEmail', formData.email);
+				sessionStorage.setItem('registrationData', JSON.stringify(formData));
+
+				// Chuyển đến trang xác thực OTP
 				setTimeout(() => {
-					window.location.href = '/login';
-				}, 2000);
+					window.location.href = '/verify-otp';
+				}, 1500);
 			} else {
 				if (data.message.includes('Email')) {
 					showError('email', data.message);
@@ -214,7 +220,7 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
 			}
 		})
 		.catch(error => {
-			showError('email', 'Đã xảy ra lỗi khi đăng ký');
+			showError('email', 'Đã xảy ra lỗi khi gửi mã OTP. Vui lòng thử lại.');
 			submitBtn.innerHTML = originalText;
 			submitBtn.disabled = false;
 			console.error('Error:', error);

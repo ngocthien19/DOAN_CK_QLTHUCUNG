@@ -18,6 +18,44 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchSection = document.querySelector('.search');
     const searchInput = document.getElementById('search-input');
     const searchForm = searchInput?.closest('form');
+	
+	// Trong hàm checkAuthStatus(), sửa phần hiển thị user menu
+	function checkAuthStatus() {
+	    const token = localStorage.getItem('jwtToken');
+	    const userData = localStorage.getItem('user');
+	    const authButtons = document.getElementById('authButtons');
+	    const userMenu = document.getElementById('userMenu');
+	    const userAccountLink = document.getElementById('userAccountLink');
+	    
+	    if (token && userData) {
+	        // Đã đăng nhập
+	        authButtons.style.display = 'none';
+	        userMenu.style.display = 'flex';
+	        userAccountLink.style.display = 'block';
+	        
+	        try {
+	            const user = JSON.parse(userData);
+	            document.getElementById('userName').textContent = user.username || 'User';
+	            
+	            // ✅ THÊM TOKEN VÀO URL PROFILE
+	            const profileLink = document.querySelector('a[href="/profile"]');
+	            if (profileLink) {
+	                profileLink.href = `/profile?token=${token}`;
+	            }
+	            
+	        } catch (e) {
+	            console.error('Error parsing user data:', e);
+	        }
+	        
+	        // Load cart quantity
+	        loadCartQuantity();
+	    } else {
+	        // Chưa đăng nhập
+	        authButtons.style.display = 'flex';
+	        userMenu.style.display = 'none';
+	        userAccountLink.style.display = 'none';
+	    }
+	}
 
     // Initialize search functionality
     function initSearch() {

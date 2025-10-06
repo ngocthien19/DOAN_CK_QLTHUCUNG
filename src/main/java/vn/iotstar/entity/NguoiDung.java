@@ -24,7 +24,7 @@ public class NguoiDung {
     
     @NotBlank(message = "Email không được để trống")
     @Email(message = "Email không đúng định dạng")
-    @Column(name = "Email", nullable = false, unique = true, columnDefinition = "NVARCHAR(100)")
+    @Column(name = "Email", nullable = false, unique = true, columnDefinition = "VARCHAR(100)")
     private String email;
     
     @NotBlank(message = "Mật khẩu không được để trống")

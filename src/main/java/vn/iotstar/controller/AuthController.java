@@ -13,6 +13,7 @@ import vn.iotstar.entity.NguoiDung;
 import vn.iotstar.model.*;
 import vn.iotstar.repository.NguoiDungRepository;
 import vn.iotstar.service.AuthService;
+import vn.iotstar.service.OtpService;
 import vn.iotstar.service.UserDetailsImpl;
 import vn.iotstar.util.JwtUtil;
 
@@ -23,6 +24,9 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private OtpService otpService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -50,7 +54,7 @@ public class AuthController {
             // Get user details
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             
-            // Lấy thông tin người dùng từ database để lấy tenNguoiDung
+            // Lấy thông tin người dùng từ database
             NguoiDung nguoiDung = nguoiDungRepository.findByEmail(userDetails.getEmail())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
             
@@ -61,12 +65,12 @@ public class AuthController {
                 .map(r -> r.replace("ROLE_", ""))
                 .orElse("USER");
             
-            // Create response với tenNguoiDung
+            // Create response
             JwtResponse jwtResponse = JwtResponse.builder()
                 .token(jwt)
                 .type("Bearer")
                 .id(userDetails.getId())
-                .username(nguoiDung.getTenNguoiDung())  // Sử dụng tenNguoiDung thay vì email
+                .username(nguoiDung.getTenNguoiDung())
                 .email(userDetails.getEmail())
                 .role(role)
                 .build();
@@ -79,6 +83,34 @@ public class AuthController {
         }
     }
 
+    // API gửi OTP
+    @PostMapping("/send-otp")
+    public ResponseEntity<ApiResponse<String>> sendOtp(@Valid @RequestBody OtpRequest otpRequest) {
+        ApiResponse<String> result = otpService.generateAndSendOtp(otpRequest);
+        
+        if (result.isSuccess()) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+
+    // API xác thực OTP và hoàn tất đăng ký
+    @PostMapping("/verify-otp")
+    public ResponseEntity<ApiResponse<String>> verifyOtp(@Valid @RequestBody OtpVerifyRequest request) {
+        ApiResponse<String> result = otpService.verifyOtpAndRegister(
+            request.getEmail(), 
+            request.getOtpCode()
+        );
+        
+        if (result.isSuccess()) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+
+    // API đăng ký cũ (giữ lại để tương thích ngược)
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<String>> registerUser(@Valid @RequestBody NguoiDungModel signUpModel) {
         ApiResponse<String> result = authService.registerUser(signUpModel);

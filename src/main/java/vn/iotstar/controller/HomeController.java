@@ -256,8 +256,7 @@ public class HomeController {
         model.addAttribute("searchKeyword", search != null ? search : "");
         
         return "web/products";
-    }
-    
+    } 
     // ========== CÁC PHƯƠNG THỨC XỬ LÝ ẢNH ==========
     
     /**

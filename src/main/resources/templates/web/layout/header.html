@@ -88,7 +88,7 @@
                                 <i class="fa fa-chevron-down"></i>
                             </a>
                             <div class="dropdown-content">
-                                <a th:href="@{/user}">
+                                <a th:href="@{/profile}">
                                     <i class="fa fa-user"></i>
                                     Tài khoản
                                 </a>
@@ -154,7 +154,7 @@
                             </li>
                             <li>
                                 <a th:href="@{/products}">
-                                    <i class="fa-solid fa-dog"></i>
+                                    <i class="fa-solid fa-shop"></i>
                                     <span>Tất cả sản phẩm</span>
                                 </a>
                             </li>
@@ -171,7 +171,7 @@
                             </li>
                         </a>
                         <!-- Ẩn User account khi chưa đăng nhập -->
-                        <a th:href="@{/user}" id="userAccountLink" style="display: none;">
+                        <a th:href="@{/profile}" id="userAccountLink" style="display: none;">
                             <li th:class="${activeMenu == 'user'} ? 'nav_link_item active' : 'nav_link_item'">
                                 Tài khoản
                                 <hr th:if="${activeMenu == 'user'}" data-aos="fade-right"/>

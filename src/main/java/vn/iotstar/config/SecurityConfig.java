@@ -58,7 +58,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
+        configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
         
@@ -79,18 +80,34 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(authz -> authz
+                // Public APIs - không cần authentication
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
+                
+                // Static resources - cho phép truy cập tự do
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/fonts/**", "/webjars/**").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/files/**").permitAll()
+                
+                // Public pages - không cần đăng nhập
                 .requestMatchers("/", "/index", "/home").permitAll()
-                .requestMatchers("/login", "/register").permitAll()
+                .requestMatchers("/login", "/register", "/verify-otp").permitAll()
                 .requestMatchers("/web/**").permitAll()
                 .requestMatchers("/products", "/product/**").permitAll()
                 .requestMatchers("/category/**", "/view/**").permitAll()
                 .requestMatchers("/stores", "/store/**").permitAll()
+                
+                // User profile pages - cần đăng nhập
+                .requestMatchers("/profile").authenticated()
+                .requestMatchers("/user/**").authenticated()
+                
+                // API user - cần đăng nhập
+                .requestMatchers("/api/user/**").authenticated()
+                
+                // Admin pages - cần role ADMIN
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                
+                // Mặc định - yêu cầu authentication
                 .anyRequest().authenticated()
             );
         

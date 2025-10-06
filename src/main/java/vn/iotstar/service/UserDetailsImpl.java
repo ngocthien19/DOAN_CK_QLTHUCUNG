@@ -1,6 +1,8 @@
 package vn.iotstar.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +12,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
+@Data
+@AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
@@ -19,45 +23,21 @@ public class UserDetailsImpl implements UserDetails {
     @JsonIgnore
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
-    private String trangThai; // Thêm field này
 
-    // Constructor mới với trangThai
-    public UserDetailsImpl(Integer id, String username, String email, String password,
-                          Collection<? extends GrantedAuthority> authorities, String trangThai) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.authorities = authorities;
-        this.trangThai = trangThai;
-    }
-
-    public static UserDetailsImpl build(NguoiDung user) {
-        GrantedAuthority authority = new SimpleGrantedAuthority(
-            "ROLE_" + user.getVaiTro().getMaVaiTro().toUpperCase()
-        );
+    public static UserDetailsImpl build(NguoiDung nguoiDung) {
+        GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + nguoiDung.getVaiTro().getMaVaiTro());
 
         return new UserDetailsImpl(
-            user.getMaNguoiDung(),
-            user.getEmail(),
-            user.getEmail(),
-            user.getMatKhau(),
-            Collections.singletonList(authority),
-            user.getTrangThai() // Truyền trạng thái từ entity
-        );
-    }
-
-    public Integer getId() {
-        return id;
+                nguoiDung.getMaNguoiDung(),
+                nguoiDung.getTenNguoiDung(),
+                nguoiDung.getEmail(),
+                nguoiDung.getMatKhau(),
+                Collections.singletonList(authority));
     }
 
     @Override
-    public String getUsername() {
-        return username;
-    }
-
-    public String getEmail() {
-        return email;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
     }
 
     @Override
@@ -66,8 +46,12 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+    public String getUsername() {
+        return email; // Spring Security sử dụng email làm username
+    }
+
+    public String getDisplayName() {
+        return username;
     }
 
     @Override
@@ -87,8 +71,13 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        // Kiểm tra trạng thái từ field, không phải method getUserStatus()
-        return "Hoạt động".equals(trangThai);
+        return "Hoạt động".equals(getTrangThai());
+    }
+
+    // Helper method để lấy trạng thái từ entity
+    private String getTrangThai() {
+        // Implement logic để lấy trạng thái từ entity nếu cần
+        return "Hoạt động";
     }
 
     @Override
@@ -99,10 +88,5 @@ public class UserDetailsImpl implements UserDetails {
             return false;
         UserDetailsImpl user = (UserDetailsImpl) o;
         return Objects.equals(id, user.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }

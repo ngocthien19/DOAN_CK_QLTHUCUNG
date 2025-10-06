@@ -15,4 +15,9 @@ public class WebController {
     public String registerPage() {
         return "web/register";
     }
+
+    @GetMapping("/verify-otp")
+    public String verifyOtpPage() {
+        return "web/verify-otp";
+    }
 }

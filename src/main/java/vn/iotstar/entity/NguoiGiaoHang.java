@@ -24,7 +24,7 @@ public class NguoiGiaoHang {
     
     @NotBlank(message = "Số điện thoại không được để trống")
     @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Số điện thoại không đúng định dạng")
-    @Column(name = "SDTNguoiGiaoHang", columnDefinition = "NVARCHAR(100)")
+    @Column(name = "SDTNguoiGiaoHang", columnDefinition = "VARCHAR(20)")
     private String sdtNguoiGiaoHang;
     
     @NotBlank(message = "Địa chỉ không được để trống")

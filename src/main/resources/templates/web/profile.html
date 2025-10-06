@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân - PetStore</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" th:href="@{/css/web/header.css}">
+    <link rel="stylesheet" th:href="@{/css/web/content.css}">
+    <link rel="stylesheet" th:href="@{/css/web/footer.css}">
+    
+    <style>
+        /* ============= USER PROFILE STYLES ============= */
+        .user-profile-section {
+            padding: 60px 0;
+            background-color: #f8f9fa;
+            min-height: 80vh;
+        }
+
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .profile-header h1 {
+            font-size: 42px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .profile-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .profile-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 40px;
+        }
+
+        /* Sidebar Navigation */
+        .profile-sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            height: fit-content;
+        }
+
+        .user-avatar {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .avatar-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #e94560;
+            margin-bottom: 15px;
+        }
+
+        .avatar-upload {
+            position: relative;
+            display: inline-block;
+        }
+
+        .avatar-upload-label {
+            background: #e94560;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-upload-label:hover {
+            background: #d63651;
+            transform: scale(1.05);
+        }
+
+        .user-info-sidebar h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .user-info-sidebar p {
+            color: #666;
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .user-role {
+            background: #0f3460;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .profile-nav {
+            margin-top: 30px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            color: #333;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #e94560;
+        }
+
+        .nav-item.active {
+            background: #e94560;
+            color: white;
+        }
+
+        .nav-item i {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .profile-main {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 600;
+            border-bottom: 2px solid #e94560;
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .form-input:focus {
+            border-color: #e94560;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.1);
+        }
+
+        .form-input:read-only {
+            background-color: #f8f9fa;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            grid-column: 1 / -1;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #e94560;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #d63651;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #e94560;
+            color: #e94560;
+        }
+
+        .btn-outline:hover {
+            background: #e94560;
+            color: white;
+        }
+
+        /* Loading and Error States */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #e94560;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Order History */
+        .order-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e94560;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .order-status {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .profile-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .profile-sidebar {
+                order: 2;
+            }
+
+            .profile-main {
+                order: 1;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                padding: 0 20px;
+            }
+
+            .profile-main {
+                padding: 30px 20px;
+            }
+
+            .profile-header h1 {
+                font-size: 32px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .user-profile-section {
+                padding: 40px 0;
+            }
+
+            .profile-header h1 {
+                font-size: 28px;
+            }
+
+            .profile-sidebar {
+                padding: 20px;
+            }
+
+            .avatar-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .order-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Include Header Fragment -->
+    <div th:replace="~{web/layout/header :: header}"></div>
+    
+    <!-- User Profile Section -->
+    <section class="user-profile-section">
+        <div class="profile-container">
+            <div class="profile-header">
+                <h1>Thông tin cá nhân</h1>
+                <p>Quản lý thông tin tài khoản và lịch sử mua hàng của bạn</p>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="loading">
+                <div class="loading-spinner"></div>
+                <p>Đang tải thông tin...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="error-message" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p id="errorMessage"></p>
+                <button onclick="loadUserProfile()" class="btn btn-primary" style="margin-top: 10px;">
+                    <i class="fas fa-redo"></i> Thử lại
+                </button>
+            </div>
+
+            <!-- Profile Content (will be populated by JavaScript) -->
+            <div id="profileContent" style="display: none;">
+                <!-- Content will be dynamically loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Include Footer Fragment -->
+    <div th:replace="~{web/layout/footer :: footer}"></div>
+
+    <!-- JavaScript -->
+    <script>
+        // Global variables
+        let currentUser = null;
+
+        // Load user profile when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserProfile();
+        });
+
+        // Load user profile from API
+        async function loadUserProfile() {
+            const token = localStorage.getItem('jwtToken');
+            
+            // Show loading state
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('profileContent').style.display = 'none';
+
+            if (!token) {
+                showError('Vui lòng đăng nhập để xem trang cá nhân');
+                setTimeout(() => {
+                    window.location.href = '/web/login';
+                }, 2000);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/profile', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem('jwtToken');
+                    localStorage.removeItem('user');
+                    showError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                    setTimeout(() => {
+                        window.location.href = '/web/login';
+                    }, 3000);
+                    return;
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentUser = result.data;
+                    displayUserProfile(currentUser);
+                } else {
+                    showError('Lỗi: ' + result.message);
+                }
+
+            } catch (error) {
+                showError('Lỗi kết nối: ' + error.message);
+            }
+        }
+
+        // Display user profile
+        function displayUserProfile(user) {
+            const profileHTML = `
+                <div class="profile-content">
+                    <!-- Sidebar -->
+                    <div class="profile-sidebar">
+                        <div class="user-avatar">
+                            <div class="avatar-upload">
+                                <img src="${user.hinhAnh || '/images/default-avatar.jpg'}" 
+                                     alt="Avatar" class="avatar-image" id="avatarPreview">
+                                <label for="avatarInput" class="avatar-upload-label">
+                                    <i class="fas fa-camera"></i> Đổi ảnh
+                                </label>
+                                <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                            </div>
+                        </div>
+                        
+                        <div class="user-info-sidebar">
+                            <h3>${user.tenNguoiDung || 'Chưa có tên'}</h3>
+                            <p>${user.email}</p>
+                            <p>${user.sdt || 'Chưa cập nhật'}</p>
+                            <div class="user-role">${user.vaiTro?.tenVaiTro || 'USER'}</div>
+                        </div>
+
+                        <div class="profile-nav">
+                            <div class="nav-item active" data-tab="profile">
+                                <i class="fas fa-user"></i>
+                                <span>Thông tin cá nhân</span>
+                            </div>
+                            <div class="nav-item" data-tab="orders">
+                                <i class="fas fa-shopping-bag"></i>
+                                <span>Đơn hàng của tôi</span>
+                            </div>
+                            <div class="nav-item" data-tab="security">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Bảo mật</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="profile-main">
+                        <!-- Success Message -->
+                        <div id="successMessage" class="success-message" style="display: none;">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="successText"></span>
+                        </div>
+
+                        <!-- Profile Tab -->
+                        <div class="profile-tab active" id="profileTab">
+                            <h2 class="section-title">Thông tin cá nhân</h2>
+                            <form id="profileForm">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Họ và tên *</label>
+                                        <input type="text" class="form-input" name="tenNguoiDung" 
+                                               value="${user.tenNguoiDung || ''}" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Email *</label>
+                                        <input type="email" class="form-input" value="${user.email}" readonly>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Số điện thoại</label>
+                                        <input type="tel" class="form-input" name="sdt" 
+                                               value="${user.sdt || ''}" 
+                                               pattern="^(|\\+?[0-9]{10,15})$">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Vai trò</label>
+                                        <input type="text" class="form-input" 
+                                               value="${user.vaiTro?.tenVaiTro || 'USER'}" readonly>
+                                    </div>
+                                    
+                                    <div class="form-group full-width">
+                                        <label class="form-label">Địa chỉ</label>
+                                        <input type="text" class="form-input" name="diaChi" 
+                                               value="${user.diaChi || ''}" 
+                                               placeholder="Nhập địa chỉ của bạn">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Cập nhật thông tin
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Orders Tab -->
+                        <div class="profile-tab" id="ordersTab">
+                            <h2 class="section-title">Lịch sử đơn hàng</h2>
+                            <div class="orders-list">
+                                <div class="order-card">
+                                    <div class="order-header">
+                                        <strong>Đơn hàng #DH001</strong>
+                                        <span class="order-status status-completed">Đã hoàn thành</span>
+                                    </div>
+                                    <p>Ngày đặt: 15/12/2024</p>
+                                    <p>Tổng tiền: 1.500.000 VND</p>
+                                </div>
+                                <!-- Orders will be loaded dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Security Tab -->
+                        <div class="profile-tab" id="securityTab">
+                            <h2 class="section-title">Thay đổi mật khẩu</h2>
+                            <form id="passwordForm">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Mật khẩu hiện tại *</label>
+                                        <div class="password-toggle">
+                                            <input type="password" class="form-input" name="currentPassword" required>
+                                            <i class="fas fa-eye toggle-password"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Mật khẩu mới *</label>
+                                        <div class="password-toggle">
+                                            <input type="password" class="form-input" name="newPassword" 
+                                                   minlength="6" required>
+                                            <i class="fas fa-eye toggle-password"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Xác nhận mật khẩu *</label>
+                                        <div class="password-toggle">
+                                            <input type="password" class="form-input" name="confirmPassword" required>
+                                            <i class="fas fa-eye toggle-password"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-key"></i> Đổi mật khẩu
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('profileContent').innerHTML = profileHTML;
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('profileContent').style.display = 'block';
+            
+            // Initialize event listeners
+            initializeEventListeners();
+        }
+
+        // Initialize event listeners
+        function initializeEventListeners() {
+            // Tab Navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.nav-item').forEach(nav => {
+                        nav.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.profile-tab').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    
+                    const tabId = this.getAttribute('data-tab') + 'Tab';
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // Password Toggle
+            document.querySelectorAll('.toggle-password').forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const input = this.previousElementSibling;
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        this.classList.remove('fa-eye');
+                        this.classList.add('fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        this.classList.remove('fa-eye-slash');
+                        this.classList.add('fa-eye');
+                    }
+                });
+            });
+
+            // Profile Form Submission
+            document.getElementById('profileForm').addEventListener('submit', updateProfile);
+
+            // Password Form Submission
+            document.getElementById('passwordForm').addEventListener('submit', changePassword);
+        }
+
+        // Update profile
+        async function updateProfile(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                tenNguoiDung: formData.get('tenNguoiDung'),
+                sdt: formData.get('sdt'),
+                diaChi: formData.get('diaChi')
+            };
+
+            await callApi('/api/user/update', 'POST', data, 'Cập nhật thông tin thành công');
+        }
+
+        // Change password
+        async function changePassword(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const newPassword = formData.get('newPassword');
+            const confirmPassword = formData.get('confirmPassword');
+            
+            if (newPassword !== confirmPassword) {
+                showSuccess('Mật khẩu xác nhận không khớp!', false);
+                return;
+            }
+
+            const data = {
+                currentPassword: formData.get('currentPassword'),
+                newPassword: newPassword,
+                confirmPassword: confirmPassword
+            };
+
+            await callApi('/api/user/change-password', 'POST', data, 'Đổi mật khẩu thành công');
+            e.target.reset();
+        }
+
+        // Generic API call function
+        async function callApi(url, method, data, successMessage) {
+            const token = localStorage.getItem('jwtToken');
+            
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess(successMessage);
+                    if (url === '/api/user/update') {
+                        // Reload profile data
+                        loadUserProfile();
+                    }
+                } else {
+                    showSuccess(result.message, false);
+                }
+            } catch (error) {
+                showSuccess('Lỗi kết nối: ' + error.message, false);
+            }
+        }
+
+        // Show success message
+        function showSuccess(message, isSuccess = true) {
+            const successElement = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
+            
+            successText.textContent = message;
+            successElement.style.display = 'block';
+            successElement.className = isSuccess ? 'success-message' : 'error-message';
+            
+            setTimeout(() => {
+                successElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Show error message
+        function showError(message) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        }
+    </script>
+</body>
+</html>
